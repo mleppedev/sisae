@@ -1,0 +1,272 @@
+﻿@page
+@model sisae.Pages.Visitantes.CreateModel
+
+@section Scripts {
+    <script type="text/javascript">
+        // Acceder a los elementos del DOM para la cámara
+        var video = document.getElementById('video');
+        var canvas = document.getElementById('canvas');
+        var photo = document.getElementById('photo');
+        var cedulaPhoto = document.getElementById('cedulaPhoto');
+        var btnCapture = document.getElementById('btn-capture');
+        var btnScanCedula = document.getElementById('btn-scan-cedula');
+        var inputFotoBiometrica = document.getElementById('FotoBiometrica');
+
+        // Acceder a la cámara
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+                video.srcObject = stream;
+                video.play();
+            })
+            .catch(function (err) {
+                console.log("Error al acceder a la cámara: " + err);
+            });
+
+        // Capturar la imagen del visitante
+        btnCapture.addEventListener('click', function () {
+            var context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, 320, 240);
+
+            // Convertir la imagen a base64
+            var dataURL = canvas.toDataURL('image/png');
+            photo.src = dataURL;
+            photo.style.display = 'block';
+
+            // Asignar la imagen capturada al campo hidden
+            inputFotoBiometrica.value = dataURL.split(',')[1];
+        });
+
+        // Función para validar el RUT
+        function validarRut(rutCompleto) {
+            rutCompleto = rutCompleto.replace(/[.]/g, '').toLowerCase();
+            if (!/^[0-9]+-[0-9kK]{1}$/.test(rutCompleto)) return false;
+
+            var tmp = rutCompleto.split('-');
+            var digv = tmp[1];
+            var rut = tmp[0];
+
+            var suma = 0;
+            var mul = 2;
+            for (var i = rut.length - 1; i >= 0; i--) {
+                suma += rut.charAt(i) * mul;
+                mul = (mul == 7) ? 2 : mul + 1;
+            }
+
+            var res = suma % 11;
+            var dv = (res == 0) ? '0' : (res == 1) ? 'k' : (11 - res).toString();
+            return dv === digv;
+        }
+
+        // Función para convertir la fecha al formato YYYY-MM-DD
+        function formatearFechaYYYYMMDD(fecha) {
+            const partes = fecha.split('-'); // Asumimos que la fecha está en formato DD-MM-YYYY
+            const dia = partes[0];
+            const mes = partes[1];
+            const anio = partes[2];
+            return `${anio}-${mes}-${dia}`; // Formato YYYY-MM-DD
+        }
+
+        // Capturar la cédula de identidad para OCR
+        btnScanCedula.addEventListener('click', function () {
+            var context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, 320, 240);
+
+            var dataURL = canvas.toDataURL('image/png');
+            cedulaPhoto.src = dataURL;
+            cedulaPhoto.style.display = 'block';
+
+            var imageBase64 = dataURL.split(',')[1];
+
+            fetch('/Visitantes/Create?handler=ScanCedula', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify({ imageBase64: imageBase64 })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Si es un nuevo RUT, limpiar todos los campos del formulario
+                        if (!data.visitanteExistente) {
+                            limpiarCamposFormulario();
+                        }
+
+                        // Completar los campos con la nueva información
+                        if (data.nombre) {
+                            document.querySelector('input[name="Visitante.Nombre"]').value = data.nombre;
+                        }
+                        if (data.primerApellido && data.segundoApellido) {
+                            document.querySelector('input[name="Visitante.Apellido"]').value = `${data.primerApellido} ${data.segundoApellido}`;
+                        }
+                        if (data.direccion) {
+                            document.querySelector('input[name="Visitante.Direccion"]').value = data.direccion;
+                        }
+                        if (data.telefono) {
+                            document.querySelector('input[name="Visitante.Telefono"]').value = data.telefono;
+                        }
+                        if (data.email) {
+                            document.querySelector('input[name="Visitante.Email"]').value = data.email;
+                        }
+                        if (data.nacionalidad) {
+                            document.querySelector('input[name="Visitante.Nacionalidad"]').value = data.nacionalidad;
+                        }
+
+    
+                        // Validar el RUT antes de asignarlo
+                        if (data.run && validarRut(data.run)) {
+                            document.querySelector('input[name="Visitante.RUT"]').value = data.run;
+                        } else {
+                            alert("El RUT extraído no es válido.");
+                        }
+
+                        // Asignar las fechas (nacimiento y vencimiento) en formato YYYY-MM-DD
+                        if (data.nacimiento) {
+                            const fechaNacimientoFormateada = formatearFechaYYYYMMDD(data.nacimiento);
+                            document.querySelector('input[name="Visitante.FechaNacimiento"]').value = fechaNacimientoFormateada;
+                        }
+
+                        if (data.vencimiento) {
+                            const fechaVencimientoFormateada = formatearFechaYYYYMMDD(data.vencimiento);
+                            document.querySelector('input[name="Visitante.FechaVencimientoCarnet"]').value = fechaVencimientoFormateada;
+                        }
+
+                    } else {
+                        alert("No se pudo extraer información de la cédula.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en el proceso OCR:', error);
+                    alert('Ocurrió un error durante el proceso OCR.');
+                });
+        });
+
+        // Función para limpiar los campos del formulario
+        function limpiarCamposFormulario() {
+            document.querySelector('input[name="Visitante.Nombre"]').value = '';
+            document.querySelector('input[name="Visitante.Apellido"]').value = '';
+            document.querySelector('input[name="Visitante.Direccion"]').value = '';
+            document.querySelector('input[name="Visitante.Telefono"]').value = '';
+            document.querySelector('input[name="Visitante.Email"]').value = '';
+            document.querySelector('input[name="Visitante.Nacionalidad"]').value = '';
+            document.querySelector('input[name="Visitante.RUT"]').value = '';
+            document.querySelector('input[name="Visitante.FechaNacimiento"]').value = '';
+            document.querySelector('input[name="Visitante.FechaVencimientoCarnet"]').value = '';
+        }
+    </script>
+}
+
+<h2>Registrar Visitante</h2>
+
+<form method="post" class="mt-4">
+    <!-- Primera fila con RUT, Nombre, y Apellido -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="Visitante.RUT" class="control-label">RUT</label>
+                <input asp-for="Visitante.RUT" class="form-control" placeholder="RUT del visitante" />
+                <span asp-validation-for="Visitante.RUT" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="Visitante.Nombre" class="control-label">Nombres</label>
+                <input asp-for="Visitante.Nombre" class="form-control" placeholder="Nombres del visitante" />
+                <span asp-validation-for="Visitante.Nombre" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="Visitante.Apellido" class="control-label">Apellidos</label>
+                <input asp-for="Visitante.Apellido" class="form-control" placeholder="Apellidos del visitante" />
+                <span asp-validation-for="Visitante.Apellido" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Segunda fila con Fecha de Nacimiento, Dirección y Teléfono -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="Visitante.FechaNacimiento" class="control-label">Fecha de Nacimiento</label>
+                <input asp-for="Visitante.FechaNacimiento" class="form-control" type="date" />
+                <span asp-validation-for="Visitante.FechaNacimiento" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="Visitante.Direccion" class="control-label">Dirección</label>
+                <input asp-for="Visitante.Direccion" class="form-control" placeholder="Dirección del visitante" />
+                <span asp-validation-for="Visitante.Direccion" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="Visitante.Telefono" class="control-label">Teléfono</label>
+                <input asp-for="Visitante.Telefono" class="form-control" placeholder="Teléfono del visitante" />
+                <span asp-validation-for="Visitante.Telefono" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tercera fila con Email, Nacionalidad y Fecha de Vencimiento -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="Visitante.Email" class="control-label">Correo Electrónico</label>
+                <input asp-for="Visitante.Email" class="form-control" placeholder="Correo electrónico del visitante" />
+                <span asp-validation-for="Visitante.Email" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="Visitante.Nacionalidad" class="control-label">Nacionalidad</label>
+                <input asp-for="Visitante.Nacionalidad" class="form-control" placeholder="Nacionalidad del visitante" />
+                <span asp-validation-for="Visitante.Nacionalidad" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="Visitante.FechaVencimientoCarnet" class="control-label">Fecha de Vencimiento del Carnet</label>
+                <input asp-for="Visitante.FechaVencimientoCarnet" class="form-control" type="date" />
+                <span asp-validation-for="Visitante.FechaVencimientoCarnet" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Capturar imagen y escanear cédula -->
+    <div class="form-group mt-5 text-center">
+        <label class="control-label h4">Capturar Imagen y Escanear Cédula</label>
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <button type="button" class="btn btn-secondary btn-lg mb-3 w-100" id="btn-capture">Capturar Imagen del Visitante</button>
+                <img id="photo" src="#" alt="Foto del visitante" style="display:none; width: 200px; height: auto; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0,0,0,0.1);" />
+            </div>
+
+            <div class="col-md-3">
+                <button type="button" class="btn btn-primary btn-lg mb-3 w-100" id="btn-scan-cedula">Escanear Cédula de Identidad</button>
+                <img id="cedulaPhoto" src="#" alt="Foto de la cédula" style="display:none; width: 200px; height: auto; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0,0,0,0.1);" />
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <video id="video" width="320" height="240" class="border rounded" autoplay></video>
+        </div>
+
+        <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+
+        <input type="hidden" asp-for="Visitante.FotoBiometrica" id="FotoBiometrica" />
+        <span asp-validation-for="Visitante.FotoBiometrica" class="text-danger"></span>
+    </div>
+
+    <!-- Botón para registrar visitante -->
+    <button type="submit" class="btn btn-primary mt-4 w-100">Registrar Visitante</button>
+</form>
+

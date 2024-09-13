@@ -1,0 +1,40 @@
+﻿@page
+@model sisae.Pages.Visitados.IndexModel
+@{
+    ViewData["Title"] = "Lista de Visitados";
+}
+
+<h2>Lista de Visitados</h2>
+
+<a asp-page="./Create" class="btn btn-primary">Crear Nuevo Visitado</a>
+
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Cargo</th>
+            <th>Departamento</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Visitados)
+        {
+            <tr>
+                <td>@item.Nombre</td>
+                <td>@item.Apellido</td>
+                <td>@item.Cargo</td>
+                <td>@item.Departamento</td>
+                <td>@item.Email</td>
+                <td>@item.Telefono</td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.ID_Visitado" class="btn btn-sm btn-warning">Editar</a>
+                    <a asp-page="./Delete" asp-route-id="@item.ID_Visitado" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,12 @@
+﻿@page
+@model sisae.Pages.Visitados.DeleteModel
+@{
+    ViewData["Title"] = "Eliminar Visitado";
+}
+
+<h2>¿Estás seguro que deseas eliminar a @Model.Visitado.Nombre @Model.Visitado.Apellido?</h2>
+
+<form method="post">
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-page="./Index" class="btn btn-secondary">Cancelar</a>
+</form>

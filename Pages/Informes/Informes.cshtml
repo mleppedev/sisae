@@ -1,0 +1,54 @@
+﻿@page
+@model sisae.Pages.Informes.InformesModel
+@{
+    ViewData["Title"] = "Generar Informes";
+}
+
+<div class="container mt-5">
+    <h2>Generar Informes con Lenguaje Natural</h2>
+    <p>Escribe tu consulta para obtener informes detallados sobre las visitas.</p>
+
+    <form method="post">
+        <div class="form-group">
+            <label for="consulta">Consulta:</label>
+            <input type="text" class="form-control" id="consulta" asp-for="Consulta" placeholder="Ejemplo: ¿Cuántas visitas se han realizado esta semana?" />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Enviar</button>
+    </form>
+
+    @if (Model.SqlQuery != null)
+    {
+        <div class="mt-4">
+            <label for="sqlQuery">Consulta SQL Generada:</label>
+            <input type="text" class="form-control" id="sqlQuery" readonly value="@Model.SqlQuery" />
+        </div>
+    }
+
+    @if (Model.Respuesta != null && Model.Respuesta.Count > 0)
+    {
+        <div class="mt-4">
+            <h4>Respuesta:</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        @foreach (var key in Model.Respuesta[0].Keys)
+                        {
+                            <th>@key</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in Model.Respuesta)
+                    {
+                        <tr>
+                            @foreach (var value in row.Values)
+                            {
+                                <td>@value</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

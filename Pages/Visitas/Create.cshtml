@@ -1,0 +1,72 @@
+﻿@page
+@model sisae.Pages.Visitas.CreateModel
+@{
+    ViewData["Title"] = "Registrar Visita";
+}
+
+<h1 class="text-center">Registrar Visita</h1>
+
+<div class="container mt-5">
+    <form method="post" class="row g-3">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Visita.ID_Visitante" class="form-label">Visitante</label>
+                <select asp-for="Visita.ID_Visitante" class="form-control" asp-items="Model.VisitantesSelectList"></select>
+                <span asp-validation-for="Visita.ID_Visitante" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <label asp-for="Visita.ID_Visitado" class="form-label">Visitado</label>
+                <select asp-for="Visita.ID_Visitado" class="form-control" asp-items="Model.VisitadosSelectList"></select>
+                <span asp-validation-for="Visita.ID_Visitado" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <label asp-for="Visita.Motivo_Visita" class="form-label">Motivo de la Visita</label>
+                <input asp-for="Visita.Motivo_Visita" class="form-control" />
+                <span asp-validation-for="Visita.Motivo_Visita" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <label asp-for="Visita.Comentarios" class="form-label">Comentarios</label>
+                <textarea asp-for="Visita.Comentarios" class="form-control"></textarea>
+                <span asp-validation-for="Visita.Comentarios" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group mt-3">
+                <label asp-for="Visita.Fecha_Visita" class="form-label">Fecha de Visita</label>
+                <input asp-for="Visita.Fecha_Visita" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                <span asp-validation-for="Visita.Fecha_Visita" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <label asp-for="Visita.Hora_Entrada" class="form-label">Hora de Entrada</label>
+                <input asp-for="Visita.Hora_Entrada" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
+                <span asp-validation-for="Visita.Hora_Entrada" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <label asp-for="Visita.Hora_Salida" class="form-label">Hora de Salida (Opcional)</label>
+                <input asp-for="Visita.Hora_Salida" class="form-control" />
+                <span asp-validation-for="Visita.Hora_Salida" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <label asp-for="Visita.Estado" class="form-label">Estado de la Visita</label>
+                <select asp-for="Visita.Estado" class="form-control">
+                    <option value="Activa">Activa</option>
+                    <option value="Completada">Completada</option>
+                    <option value="Cancelada">Cancelada</option>
+                </select>
+                <span asp-validation-for="Visita.Estado" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-12 text-center mt-5">
+            <button type="submit" class="btn btn-primary">Registrar Visita</button>
+            <a asp-page="./Index" class="btn btn-secondary ms-2">Cancelar</a>
+        </div>
+    </form>
+</div>

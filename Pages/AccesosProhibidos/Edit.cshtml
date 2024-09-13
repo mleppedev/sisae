@@ -1,0 +1,46 @@
+﻿@page "{id:int}"
+@model sisae.Pages.AccesosProhibidos.EditModel
+@{
+    ViewData["Title"] = "Editar Acceso Prohibido";
+}
+
+<h2>Editar Acceso Prohibido</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="AccesoProhibido.ID_Acceso_Prohibido" />
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="AccesoProhibido.ID_Visitante" class="control-label">Visitante</label>
+                <select asp-for="AccesoProhibido.ID_Visitante" class="form-control" asp-items="Model.VisitantesSelectList"></select>
+                <span asp-validation-for="AccesoProhibido.ID_Visitante" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AccesoProhibido.Fecha_Prohibicion" class="control-label"></label>
+                <input asp-for="AccesoProhibido.Fecha_Prohibicion" class="form-control" />
+                <span asp-validation-for="AccesoProhibido.Fecha_Prohibicion" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="AccesoProhibido.Motivo" class="control-label"></label>
+                <input asp-for="AccesoProhibido.Motivo" class="form-control" />
+                <span asp-validation-for="AccesoProhibido.Motivo" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AccesoProhibido.Fecha_Expiracion" class="control-label"></label>
+                <input asp-for="AccesoProhibido.Fecha_Expiracion" class="form-control" />
+                <span asp-validation-for="AccesoProhibido.Fecha_Expiracion" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group mt-3">
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            <a asp-page="./Index" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</form>

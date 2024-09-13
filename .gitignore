@@ -1,0 +1,13 @@
+# Ignorar archivos de configuración con credenciales
+secrets.json
+appsettings.json
+
+# Ignorar carpetas de compilación
+bin/
+obj/
+
+# Ignorar otros archivos temporales o de configuración
+*.user
+*.suo
+*.log
+*.tmp

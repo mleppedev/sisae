@@ -1,0 +1,26 @@
+﻿@page
+@model sisae.Pages.Help.HelpModel
+@{
+    ViewData["Title"] = "Solicitar Ayuda";
+}
+
+<div class="container mt-5">
+    <h2>Solicitar Ayuda</h2>
+    <p>¿Tienes alguna duda o necesitas asistencia? Escribe tu consulta y nuestro asistente virtual te ayudará.</p>
+
+    <form method="post">
+        <div class="form-group">
+            <label for="consulta">Consulta:</label>
+            <input type="text" class="form-control" id="consulta" asp-for="Consulta" placeholder="Escribe tu pregunta aquí" />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Enviar</button>
+    </form>
+
+    @if (Model.Respuesta != null)
+    {
+        <div class="mt-4">
+            <h4>Respuesta:</h4>
+            <p>@Model.Respuesta</p>
+        </div>
+    }
+</div>

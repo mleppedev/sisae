@@ -1,0 +1,108 @@
+{
+  "faq": {
+    "general": {
+      "questions": [
+        {
+          "question": "¿Qué es Sisae?",
+          "answer": "Sisae es un sistema de gestión de visitas utilizado para registrar, monitorear y controlar el acceso de visitantes a ciertas instalaciones. Su objetivo es permitir un control detallado de las visitas, con funcionalidades como generación de informes, control de accesos prohibidos y gestión de datos de visitantes y visitados."
+        },
+        {
+          "question": "¿Para qué tipo de organizaciones es útil Sisae?",
+          "answer": "Sisae es útil para cualquier organización que requiera un control de acceso estricto, como edificios gubernamentales, empresas, condominios residenciales o cualquier instalación que necesite registrar visitas y prohibir accesos cuando sea necesario."
+        }
+      ]
+    },
+    "funcionalidades": {
+      "questions": [
+        {
+          "question": "¿Cómo puedo registrar una visita en Sisae?",
+          "answer": "Para registrar una visita en Sisae, ingresa al módulo de 'Visitas', selecciona el visitante, el visitado y completa los detalles de la visita como la fecha, hora de entrada, motivo de la visita y estado."
+        },
+        {
+          "question": "¿Cómo se genera un informe de visitas en Sisae?",
+          "answer": "En la sección 'Generar Informes', puedes seleccionar las fechas de inicio y fin para el periodo que deseas revisar, y hacer clic en 'Generar'. Sisae te proporcionará un informe detallado con todas las visitas registradas en ese periodo, incluyendo información como el visitante, visitado, motivo y estado de la visita."
+        },
+        {
+          "question": "¿Cómo puedo prohibir el acceso a un visitante?",
+          "answer": "Puedes prohibir el acceso a un visitante desde el módulo 'Accesos Prohibidos'. Selecciona el visitante, define el motivo de la prohibición, la fecha de prohibición y opcionalmente, la fecha de expiración de la prohibición."
+        },
+        {
+          "question": "¿Qué tipo de informes puede generar Sisae?",
+          "answer": "Sisae permite generar informes de visitas registradas, informes de accesos prohibidos y estadísticas generales sobre el uso del sistema. Los informes incluyen detalles como fechas, motivos, tiempos de permanencia y estados de las visitas."
+        }
+      ]
+    },
+    "errores_comunes": {
+      "questions": [
+        {
+          "question": "¿Qué significa el error 'Sintaxis incorrecta cerca de LIMIT'?",
+          "answer": "Este error se debe a que la palabra 'LIMIT' no es compatible con SQL Server. Para corregirlo, debes reemplazar 'LIMIT' por 'TOP' en la consulta SQL que estés ejecutando."
+        },
+        {
+          "question": "¿Qué hago si no puedo generar un informe?",
+          "answer": "Si no puedes generar un informe, verifica que las fechas sean correctas y que haya registros de visitas en el periodo especificado. Si el problema persiste, asegúrate de que la base de datos esté conectada correctamente o contacta al equipo de soporte."
+        },
+        {
+          "question": "¿Por qué no puedo guardar una visita?",
+          "answer": "Esto puede ocurrir si algún campo obligatorio no ha sido completado o si hay un error en la base de datos. Asegúrate de que todos los campos requeridos estén llenos y que no haya problemas con la conexión a la base de datos."
+        }
+      ]
+    },
+    "base_de_datos": {
+      "questions": [
+        {
+          "question": "¿Cuáles son las tablas principales en la base de datos de Sisae?",
+          "answer": "Las tablas principales son 'Visitas', 'Visitantes' y 'Visitados'. Estas tablas están relacionadas mediante claves foráneas para gestionar la información de los visitantes y los visitados."
+        },
+        {
+          "question": "¿Cómo está estructurada la tabla 'Visitas'?",
+          "answer": "La tabla 'Visitas' incluye los siguientes campos: 'ID_Visita', 'ID_Visitante', 'ID_Visitado', 'Hora_Entrada', 'Hora_Salida', 'Fecha_Visita', 'Motivo_Visita', 'Estado' y 'Comentarios'."
+        },
+        {
+          "question": "¿Qué campos contiene la tabla 'Visitantes'?",
+          "answer": "La tabla 'Visitantes' incluye los siguientes campos: 'ID_Visitante', 'Nombre', 'Apellido', 'Direccion', 'Email', 'FechaNacimiento', 'FechaVencimientoCarnet', 'Nacionalidad', 'RUT' y 'Telefono'."
+        },
+        {
+          "question": "¿Qué campos contiene la tabla 'Visitados'?",
+          "answer": "La tabla 'Visitados' incluye los campos: 'ID_Visitado', 'Nombre', 'Apellido', 'Cargo', 'Departamento', 'Email' y 'Telefono'."
+        }
+      ]
+    },
+    "integraciones": {
+      "questions": [
+        {
+          "question": "¿Es compatible Sisae con otros sistemas de gestión?",
+          "answer": "Sisae puede integrarse con otros sistemas mediante API o mediante exportaciones e importaciones de datos en formato CSV. Además, se puede personalizar para adaptarse a las necesidades específicas de la organización."
+        },
+        {
+          "question": "¿Cómo se realiza la exportación de datos desde Sisae?",
+          "answer": "Sisae permite exportar informes y datos de visitas en formato CSV, lo que facilita la integración con otros sistemas de análisis o gestión de recursos."
+        }
+      ]
+    },
+    "seguridad": {
+      "questions": [
+        {
+          "question": "¿Cómo protege Sisae los datos personales de los visitantes?",
+          "answer": "Sisae cuenta con varias medidas de seguridad para proteger los datos personales, incluyendo encriptación de datos sensibles y políticas de acceso restringido a la información. Solo usuarios autorizados pueden acceder a los datos confidenciales."
+        },
+        {
+          "question": "¿Qué hacer en caso de detectar un acceso no autorizado a Sisae?",
+          "answer": "Si se detecta un acceso no autorizado, es recomendable desactivar temporalmente el acceso de la cuenta afectada y contactar al equipo de soporte para revisar los logs de seguridad y corregir cualquier vulnerabilidad."
+        }
+      ]
+    },
+    "soporte_tecnico": {
+      "questions": [
+        {
+          "question": "¿Cómo puedo contactar al equipo de soporte de Sisae?",
+          "answer": "Puedes contactar al equipo de soporte de Sisae mediante el formulario de contacto en la plataforma o enviando un correo electrónico a soporte@sisae.com."
+        },
+        {
+          "question": "¿Qué información debo proporcionar al contactar soporte técnico?",
+          "answer": "Al contactar al soporte técnico, es útil proporcionar detalles sobre el problema, como los mensajes de error que se muestran, las acciones realizadas antes de que ocurriera el problema y la información de la versión del sistema que estás utilizando."
+        }
+      ]
+    }
+  }
+}

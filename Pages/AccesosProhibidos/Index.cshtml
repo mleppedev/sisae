@@ -1,0 +1,38 @@
+﻿@page
+@model sisae.Pages.AccesosProhibidos.IndexModel
+@{
+    ViewData["Title"] = "Accesos Prohibidos";
+}
+
+<h2>Lista de Accesos Prohibidos</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Fecha de Prohibición</th>
+            <th>Fecha de Expiración</th>
+            <th>Visitante</th>
+            <th>Motivo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.AccesosProhibidos)
+        {
+            <tr>
+                <td>@item.ID_Acceso_Prohibido</td>
+                <td>@item.Fecha_Prohibicion.ToShortDateString()</td>
+                <td>@item.Fecha_Expiracion?.ToShortDateString()</td>
+                <td>@item.Visitante.Nombre @item.Visitante.Apellido</td>
+                <td>@item.Motivo</td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.ID_Acceso_Prohibido" class="btn btn-sm btn-warning">Editar</a>
+                    <a asp-page="./Delete" asp-route-id="@item.ID_Acceso_Prohibido" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-page="./Create" class="btn btn-primary">Crear Nuevo Acceso Prohibido</a>

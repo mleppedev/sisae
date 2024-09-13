@@ -1,0 +1,88 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Sistema de Gestión de Visitas";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col text-center">
+            <h1 class="display-4">¡Bienvenido al Sistema de Gestión de Visitas!</h1>
+            <p class="lead mt-4">Administra, registra y monitorea las visitas a tu edificio de manera eficiente y segura.</p>
+            <hr class="my-4">
+        </div>
+    </div>
+
+    <!-- Fila 1: Registrar Visita, Registrar Visitantes, Accesos Prohibidos -->
+    <div class="row text-center mt-5 d-flex align-items-stretch">
+        <!-- Registrar Visita -->
+        <div class="col-md-4 mb-4 d-flex align-items-stretch">
+            <div class="card shadow-sm w-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Registrar Visita</h5>
+                    <p class="card-text">Registra una nueva visita de manera rápida y segura.</p>
+                    <a href="/Visitas/Index" class="btn btn-primary mt-auto">Registrar Visita</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registrar Visitantes -->
+        <div class="col-md-4 mb-4 d-flex align-items-stretch">
+            <div class="card shadow-sm w-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Registrar Visitantes</h5>
+                    <p class="card-text">Añade nuevos visitantes a tu base de datos con facilidad y seguridad.</p>
+                    <a href="/Visitantes/Create" class="btn btn-primary mt-auto">Registrar Visitante</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accesos Prohibidos (Mantenedor) -->
+        <div class="col-md-4 mb-4 d-flex align-items-stretch">
+            <div class="card shadow-sm w-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Accesos Prohibidos</h5>
+                    <p class="card-text">Consulta la lista de visitantes con acceso prohibido a tus instalaciones.</p>
+                    <a href="/AccesosProhibidos/Index" class="btn btn-primary mt-auto">Mantención Accesos Prohibidos</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fila 2: Registrar Visitados, Generar Informes, Formulario de Contacto -->
+    <div class="row text-center mt-5 d-flex align-items-stretch">
+        <!-- Registrar Visitados (Mantenedor) -->
+        <div class="col-md-4 mb-4 d-flex align-items-stretch">
+            <div class="card shadow-sm w-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Registrar Visitados</h5>
+                    <p class="card-text">Registra las personas visitadas de forma fácil y rápida.</p>
+                    <a href="/Visitados/Index" class="btn btn-primary mt-auto">Mantención Visitados</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generar Informes -->
+        <div class="col-md-4 mb-4 d-flex align-items-stretch">
+            <div class="card shadow-sm w-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Generar Informes</h5>
+                    <p class="card-text">Obtén informes detallados sobre las visitas utilizando lenguaje natural.</p>
+                    <a href="/Informes/Informes" class="btn btn-primary mt-auto">Generar Informe</a>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Formulario de Contacto -->
+        <div class="col-md-4 mb-4 d-flex align-items-stretch">
+            <div class="card shadow-sm w-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">¿Tienes alguna duda o necesitas asistencia?</h5>
+                    <p class="card-text">Conversa con nuestro asistente virtual para recibir respuestas inmediatas a tus consultas.</p>
+                    <a href="/Help/Help" class="btn btn-primary mt-auto">Solicitar Ayuda</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

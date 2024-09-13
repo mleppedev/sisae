@@ -1,0 +1,42 @@
+﻿@page
+@model sisae.Pages.Visitas.IndexModel
+@{
+    ViewData["Title"] = "Visitas";
+}
+
+<h1 class="text-center">Visitas Registradas</h1>
+
+<a asp-page="./Create" class="btn btn-primary">Registrar Nueva Visita</a>
+
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Visitante</th>
+            <th>Visitado</th>
+            <th>Fecha</th>
+            <th>Hora Entrada</th>
+            <th>Hora Salida</th>
+            <th>Motivo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var visita in Model.Visitas)
+        {
+            <tr>
+                <td>@visita.Visitante.Apellido, @visita.Visitante.Nombre (@visita.Visitante.RUT)</td>
+                <td>@visita.Visitado.Apellido, @visita.Visitado.Nombre</td>
+                <td>@visita.Fecha_Visita.ToString("dd-MM-yyyy")</td>
+                <td>@visita.Hora_Entrada.ToString(@"hh\:mm")</td>
+                <td>@(visita.Hora_Salida.HasValue ? visita.Hora_Salida.Value.ToString(@"hh\:mm") : "No registrado")</td>
+                <td>@visita.Motivo_Visita</td>
+                <td>@visita.Estado</td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@visita.ID_Visita" class="btn btn-sm btn-warning">Editar</a>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>

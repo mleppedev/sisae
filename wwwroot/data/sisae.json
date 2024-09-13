@@ -1,0 +1,62 @@
+{
+  "tables": {
+    "Visitas": {
+      "columns": [
+        "ID_Visita",
+        "ID_Visitante",
+        "ID_Visitado",
+        "Hora_Entrada",
+        "Hora_Salida",
+        "Fecha_Visita",
+        "Motivo_Visita",
+        "Estado",
+        "Comentarios"
+      ],
+      "primary_key": "ID_Visita",
+      "foreign_keys": {
+        "Visitante": "Visitantes.ID_Visitante",
+        "Visitado": "Visitados.ID_Visitado"
+      }
+    },
+    "Visitantes": {
+      "columns": [
+        "ID_Visitante",
+        "Nombre",
+        "Apellido",
+        "Direccion",
+        "Email",
+        "FechaNacimiento",
+        "FechaVencimientoCarnet",
+        "Nacionalidad",
+        "RUT",
+        "Telefono"
+      ],
+      "primary_key": "ID_Visitante"
+    },
+    "Visitados": {
+      "columns": [
+        "ID_Visitado",
+        "Nombre",
+        "Apellido",
+        "Cargo",
+        "Departamento",
+        "Email",
+        "Telefono"
+      ],
+      "primary_key": "ID_Visitado"
+    },
+    "AccesosProhibidos": {
+      "columns": [
+        "ID_Acceso_Prohibido",
+        "ID_Visitante",
+        "Fecha_Prohibicion",
+        "Fecha_Expiracion",
+        "Motivo"
+      ],
+      "primary_key": "ID_Acceso_Prohibido",
+      "foreign_keys": {
+        "Visitante": "Visitantes.ID_Visitante"
+      }
+    }
+  }
+}
