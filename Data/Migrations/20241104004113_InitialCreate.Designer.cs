@@ -12,8 +12,8 @@ using sisae.Data;
 namespace sisae.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240910030623_DB20240910")]
-    partial class DB20240910
+    [Migration("20241104004113_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
