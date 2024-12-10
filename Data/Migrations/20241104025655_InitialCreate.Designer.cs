@@ -12,7 +12,7 @@ using sisae.Data;
 namespace sisae.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241104004113_InitialCreate")]
+    [Migration("20241104025655_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

@@ -159,7 +159,15 @@ namespace sisae.Pages.Informes
                         new { role = "system", content = "Asegúrate de que la consulta esté correctamente optimizada y sea compatible con SQL Server. Usa 'TOP' en lugar de 'LIMIT'." },
                         new { role = "system", content = "No uses comillas dobles para los nombres de las columnas o tablas. Usa corchetes si es necesario." },
                         new { role = "system", content = "Asegúrate de que todas las consultas incluyan el formato estándar de SQL Server, y que estén correctamente alineadas con las mejores prácticas de SQL." },
-                        new { role = "system", content = "Si la consulta involucra buscar algo o alguien, utiliza la cláusula SQL 'LIKE' con comodines para encontrar coincidencias aproximadas. Usa '%nombre%' por ejemplo para buscar donde el nombre está contenido en cualquier parte del campo." }
+                        new { role = "system", content = "Si la consulta involucra buscar algo o alguien, utiliza la cláusula SQL 'LIKE' con comodines para encontrar coincidencias aproximadas. Usa '%nombre%' por ejemplo para buscar donde el nombre está contenido en cualquier parte del campo." },
+                        new { role = "system", content = "Renombra las columnas en el resultado con nombres amigables que sean fáciles de entender para un usuario administrativo. Por ejemplo, 'employee_id' podría renombrarse como 'ID del Empleado'." },
+                        new { role = "system", content = "Incluye solo la información relevante para responder a la consulta. No muestres datos redundantes o innecesarios." },
+                        new { role = "system", content = "Ordena los resultados de manera lógica. Por ejemplo, por fechas más recientes, por nombre alfabético, o según corresponda a la consulta del usuario." },
+                        new { role = "system", content = "Si es posible, limita los resultados a un número razonable, como 100 filas, para que sean manejables." },
+                        new { role = "system", content = "Utiliza 'AS' en las cláusulas SELECT para asignar nombres amigables a las columnas. Por ejemplo, SELECT employee_id AS 'ID del Empleado'." },
+                        new { role = "system", content = "Ordena las columnas de manera lógica y amigable para un usuario administrativo. Por ejemplo, coloca identificadores únicos y nombres al inicio, fechas y horas después, y detalles adicionales al final." },
+                        new { role = "system", content = "Entrega las fechas en formato corto. Utiliza la función CONVERT para asegurar el formato 'dd/MM/yyyy' para fechas." },
+                        new { role = "system", content = "Entrega las horas en formato corto 'HH:mm'. Si el campo incluye fecha y hora, extrae solo la parte de la hora usando CONVERT(VARCHAR, campo_fecha_hora, 108)." }
                     },
                     max_tokens = 1500
                 };
