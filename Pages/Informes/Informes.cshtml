@@ -20,35 +20,47 @@
     {
         <div class="mt-4">
             <label for="sqlQuery">Consulta SQL Generada:</label>
-            <input type="text" class="form-control" id="sqlQuery" readonly value="@Model.SqlQuery" />
+            <textarea class="form-control" id="sqlQuery" readonly rows="5" style="resize: both;">@Model.SqlQuery</textarea>
         </div>
     }
+
 
     @if (Model.Respuesta != null && Model.Respuesta.Count > 0)
     {
         <div class="mt-4">
-            <h4>Respuesta:</h4>
-            <table class="table table-striped">
-                <thead>
+            <input type="text" id="filtro" class="form-control" placeholder="Buscar...">
+        </div>
+        <table class="table table-striped" id="tablaRespuesta">
+            <thead>
+                <tr>
+                    @foreach (var key in Model.Respuesta[0].Keys)
+                    {
+                        <th>@key</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.Respuesta)
+                {
                     <tr>
-                        @foreach (var key in Model.Respuesta[0].Keys)
+                        @foreach (var value in row.Values)
                         {
-                            <th>@key</th>
+                            <td>@value</td>
                         }
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var row in Model.Respuesta)
-                    {
-                        <tr>
-                            @foreach (var value in row.Values)
-                            {
-                                <td>@value</td>
-                            }
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                }
+            </tbody>
+        </table>
+
+        <script>
+            document.getElementById('filtro').addEventListener('input', function() {
+                var filtro = this.value.toLowerCase();
+                var filas = document.querySelectorAll('#tablaRespuesta tbody tr');
+                filas.forEach(function(fila) {
+                    fila.style.display = fila.textContent.toLowerCase().includes(filtro) ? '' : 'none';
+                });
+            });
+        </script>
+
     }
 </div>

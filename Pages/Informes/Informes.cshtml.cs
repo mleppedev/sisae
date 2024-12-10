@@ -157,17 +157,16 @@ namespace sisae.Pages.Informes
                         new { role = "user", content = consultaNatural },
                         new { role = "system", content = "Proporciona solo la consulta SQL, sin ninguna explicación, ni contexto adicional, ni formateo de código como ```." },
                         new { role = "system", content = "Asegúrate de que la consulta esté correctamente optimizada y sea compatible con SQL Server. Usa 'TOP' en lugar de 'LIMIT'." },
-                        new { role = "system", content = "No uses comillas dobles para los nombres de las columnas o tablas. Usa corchetes si es necesario." },
-                        new { role = "system", content = "Asegúrate de que todas las consultas incluyan el formato estándar de SQL Server, y que estén correctamente alineadas con las mejores prácticas de SQL." },
-                        new { role = "system", content = "Si la consulta involucra buscar algo o alguien, utiliza la cláusula SQL 'LIKE' con comodines para encontrar coincidencias aproximadas. Usa '%nombre%' por ejemplo para buscar donde el nombre está contenido en cualquier parte del campo." },
-                        new { role = "system", content = "Renombra las columnas en el resultado con nombres amigables que sean fáciles de entender para un usuario administrativo. Por ejemplo, 'employee_id' podría renombrarse como 'ID del Empleado'." },
-                        new { role = "system", content = "Incluye solo la información relevante para responder a la consulta. No muestres datos redundantes o innecesarios." },
-                        new { role = "system", content = "Ordena los resultados de manera lógica. Por ejemplo, por fechas más recientes, por nombre alfabético, o según corresponda a la consulta del usuario." },
-                        new { role = "system", content = "Si es posible, limita los resultados a un número razonable, como 100 filas, para que sean manejables." },
-                        new { role = "system", content = "Utiliza 'AS' en las cláusulas SELECT para asignar nombres amigables a las columnas. Por ejemplo, SELECT employee_id AS 'ID del Empleado'." },
-                        new { role = "system", content = "Ordena las columnas de manera lógica y amigable para un usuario administrativo. Por ejemplo, coloca identificadores únicos y nombres al inicio, fechas y horas después, y detalles adicionales al final." },
-                        new { role = "system", content = "Entrega las fechas en formato corto. Utiliza la función CONVERT para asegurar el formato 'dd/MM/yyyy' para fechas." },
-                        new { role = "system", content = "Entrega las horas en formato corto 'HH:mm'. Si el campo incluye fecha y hora, extrae solo la parte de la hora usando CONVERT(VARCHAR, campo_fecha_hora, 108)." }
+                        new { role = "system", content = "No incluyas ninguna columna cuyo nombre contenga 'ID'. Estas columnas deben ser excluidas del resultado final." },
+                        new { role = "system", content = "Evita separar nombres y apellidos. En su lugar, combina ambos en un solo campo llamado 'VISITANTE' o 'VISITADO' según corresponda." },
+                        new { role = "system", content = "Asegúrate de que todas las consultas sigan el estándar de SQL Server. Los comandos SQL como SELECT, FROM, WHERE, etc., deben estar en MAYÚSCULAS." },
+                        new { role = "system", content = "Evita usar símbolos especiales como corchetes, comillas dobles o caracteres innecesarios en los nombres de las tablas y columnas." },
+                        new { role = "system", content = "Entrega las fechas en formato 'dd/MM/yyyy' usando CONVERT(VARCHAR, campo_fecha, 103). Entrega las horas en formato 'HH:mm' usando CONVERT(VARCHAR, campo_hora, 108)." },
+                        new { role = "system", content = "Renombra las columnas en el resultado con nombres amigables utilizando 'AS'. Por ejemplo, 'employee_name' como 'Nombre del Empleado'." },
+                        new { role = "system", content = "Incluye solo la información relevante para la consulta y limita los resultados a un máximo de 100 filas utilizando 'TOP 100'." },
+                        new { role = "system", content = "Ordena los resultados primero por 'FECHA VISITA' (más reciente primero) y luego por 'HORA ENTRADA' (más reciente primero)." },
+                        new { role = "system", content = "Todas las cadenas de texto deben ser devueltas en MAYÚSCULAS para mantener consistencia." },
+                        new { role = "system", content = "Asegúrate de que los nombres de las columnas y los valores de las filas estén ordenados de forma lógica, presentando primero nombres completos, seguidos por fechas, horas y luego los detalles relevantes." }
                     },
                     max_tokens = 1500
                 };
