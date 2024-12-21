@@ -23,7 +23,7 @@ namespace sisae.Pages.Visitantes
         [BindProperty]
         public Visitante Visitante { get; set; }
 
-        // M�todo principal para crear visitante
+        // Método principal para crear visitante
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -75,7 +75,7 @@ namespace sisae.Pages.Visitantes
             return RedirectToPage("/Index");
         }
 
-        // M�todo que procesa el OCR de la c�dula y busca si el visitante ya existe
+        // Método que procesa el OCR de la cédula y busca si el visitante ya existe
         public async Task<IActionResult> OnPostScanCedulaAsync([FromBody] JsonElement data)
         {
             try
@@ -98,7 +98,7 @@ namespace sisae.Pages.Visitantes
                         .GetProperty("responses")[0]
                         .GetProperty("textAnnotations");
 
-                    // Obtener el texto completo extra�do
+                    // Obtener el texto completo extraído
                     string ocrText = textAnnotations[0].GetProperty("description").GetString();
 
                     // Extraer los datos del MRZ (usando las funciones ya creadas)
@@ -111,7 +111,7 @@ namespace sisae.Pages.Visitantes
                     string vencimiento = ExtractFechaVencimientoMRZ(ocrText);
                     string nacionalidad = ExtractNacionalidadMRZ(ocrText); // Extraer la nacionalidad
 
-                    // Comprobar si el visitante ya est� registrado en la base de datos por su RUT
+                    // Comprobar si el visitante ya está registrado en la base de datos por su RUT
                     var visitanteExistente = await _context.Visitantes.FirstOrDefaultAsync(v => v.RUT == run);
 
                     if (visitanteExistente != null)
@@ -134,7 +134,7 @@ namespace sisae.Pages.Visitantes
                     }
                     else
                     {
-                        // Si el visitante no existe, devolver solo los datos extra�dos de la c�dula
+                        // Si el visitante no existe, devolver solo los datos extraídos de la cédula
                         return new JsonResult(new
                         {
                             success = true,
@@ -142,7 +142,7 @@ namespace sisae.Pages.Visitantes
                             nombre,
                             primerApellido,
                             segundoApellido,
-                            nacionalidad,  // Nacionalidad extra�da del MRZ
+                            nacionalidad,  // Nacionalidad extraída del MRZ
                             nacimiento,
                             vencimiento
                         });
@@ -150,7 +150,7 @@ namespace sisae.Pages.Visitantes
                 }
                 else
                 {
-                    return new JsonResult(new { success = false, message = "No se encontr� el campo 'imageBase64'." });
+                    return new JsonResult(new { success = false, message = "No se encontró el campo 'imageBase64'." });
                 }
             }
             catch (Exception ex)
@@ -170,7 +170,7 @@ namespace sisae.Pages.Visitantes
                 string month = match.Groups[2].Value;
                 string day = match.Groups[3].Value;
 
-                // Si el a�o es mayor a 50, lo asumimos del siglo XX, si es menor, del siglo XXI
+                // Si el año es mayor a 50, lo asumimos del siglo XX, si es menor, del siglo XXI
                 int yearInt = int.Parse(year);
                 string fullYear = yearInt > 50 ? "19" + year : "20" + year;
 
@@ -182,7 +182,7 @@ namespace sisae.Pages.Visitantes
 
         private string ExtractFechaVencimientoMRZ(string ocrText)
         {
-            // Extraer la fecha de vencimiento en formato YYMMDD despu�s de la letra "M" o "F"
+            // Extraer la fecha de vencimiento en formato YYMMDD después de la letra "M" o "F"
             var vencimientoRegex = new Regex(@"[MF](\d{2})(\d{2})(\d{2})");
             var match = vencimientoRegex.Match(ocrText);
             if (match.Success)
@@ -202,7 +202,7 @@ namespace sisae.Pages.Visitantes
 
         private string ExtractNacionalidadMRZ(string ocrText)
         {
-            // Expresi�n regular para extraer la sigla del pa�s en formato INCHL
+            // Expresión regular para extraer la sigla del país en formato INCHL
             var nacionalidadRegex = new Regex(@"IN([A-Z]{3})");
             var match = nacionalidadRegex.Match(ocrText);
             return match.Success ? match.Groups[1].Value : "Nacionalidad no encontrada";
@@ -210,7 +210,7 @@ namespace sisae.Pages.Visitantes
 
         private string[] ExtractNombreCompletoMRZ(string ocrText)
         {
-            // Expresi�n regular para extraer la parte del nombre y apellidos en formato APELLIDO1<APELLIDO2<<NOMBRES
+            // Expresión regular para extraer la parte del nombre y apellidos en formato APELLIDO1<APELLIDO2<<NOMBRES
             var nombreRegex = new Regex(@"([A-Z]+)<([A-Z]+)<<([A-Z<]+)");
             var match = nombreRegex.Match(ocrText);
 
@@ -229,7 +229,7 @@ namespace sisae.Pages.Visitantes
 
         private string ExtractNumDocMRZ(string ocrText)
         {
-            // Extraer el n�mero de documento del MRZ (ubicado despu�s de INCHL)
+            // Extraer el n�mero de documento del MRZ (ubicado después de INCHL)
             var numDocRegex = new Regex(@"INCHL(\d{9})");
             var match = numDocRegex.Match(ocrText);
             return match.Success ? match.Groups[1].Value : "N�mero de documento no encontrado";
@@ -237,16 +237,16 @@ namespace sisae.Pages.Visitantes
 
         private string ExtractRunMRZ(string ocrText)
         {
-            // Expresi�n regular para extraer la parte del RUT en formato CHLXXXXXXXX<DV
+            // Expresión regular para extraer la parte del RUT en formato CHLXXXXXXXX<DV
             var runRegex = new Regex(@"CHL(\d{7,8})<([0-9Kk])");
             var match = runRegex.Match(ocrText);
 
             if (match.Success)
             {
-                string run = match.Groups[1].Value; // Parte num�rica del RUN
-                string dv = match.Groups[2].Value;  // D�gito verificador
+                string run = match.Groups[1].Value; // Parte numérica del RUN
+                string dv = match.Groups[2].Value;  // Dígito verificador
 
-                // Formatear el RUN a�adiendo los puntos y el guion
+                // Formatear el RUN añadiendo los puntos y el guion
                 string formattedRun = $"{run.Substring(0, 2)}.{run.Substring(2, 3)}.{run.Substring(5)}-{dv.ToUpper()}";
 
                 return formattedRun;
