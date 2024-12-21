@@ -36,25 +36,43 @@
             inputFotoBiometrica.value = dataURL.split(',')[1];
         });
 
-        // Función para validar el RUT
-        function validarRut(rutCompleto) {
-            rutCompleto = rutCompleto.replace(/[.]/g, '').toLowerCase();
-            if (!/^[0-9]+-[0-9kK]{1}$/.test(rutCompleto)) return false;
+        // Variable para mantener el estado de la notificación
+        let hasShownAlert = false;
 
-            var tmp = rutCompleto.split('-');
-            var digv = tmp[1];
-            var rut = tmp[0];
-
-            var suma = 0;
-            var mul = 2;
-            for (var i = rut.length - 1; i >= 0; i--) {
-                suma += rut.charAt(i) * mul;
-                mul = (mul == 7) ? 2 : mul + 1;
+        document.querySelector('input[name="Visitante.RUT"]').addEventListener('blur', function() {
+            const rutInput = this.value.trim();
+            
+            if (!validarRut(rutInput)) {
+                if (!hasShownAlert) {
+                    alert("El RUT ingresado no es válido. Asegúrese de que siga el formato adecuado y tenga el dígito verificador correcto.");
+                    hasShownAlert = true; // Marcar que la alerta ha sido mostrada
+                }
+                this.focus();
+            } else {
+                hasShownAlert = false; // Resetear estado si el RUT es válido
             }
+        });
 
-            var res = suma % 11;
-            var dv = (res == 0) ? '0' : (res == 1) ? 'k' : (11 - res).toString();
-            return dv === digv;
+        // Función para validar el RUT usando Módulo 11
+        function validarRut(rutCompleto) {
+            rutCompleto = rutCompleto.replace(/[.\-]/g, '').toUpperCase(); // Eliminar puntos y guión, y convertir a mayúsculas
+            if (!/^[0-9]+[0-9K]$/.test(rutCompleto)) return false;
+
+            const rut = rutCompleto.slice(0, -1);
+            const dv = rutCompleto.slice(-1);
+            
+            let suma = 0;
+            let multiplo = 2;
+            
+            for (let i = rut.length - 1; i >= 0; i--) {
+                suma += parseInt(rut.charAt(i)) * multiplo;
+                multiplo = multiplo < 7 ? multiplo + 1 : 2;
+            }
+            
+            const resto = 11 - (suma % 11);
+            const dvCalculado = resto === 11 ? '0' : resto === 10 ? 'K' : resto.toString();
+        
+            return dvCalculado === dv;
         }
 
         // Función para convertir la fecha al formato YYYY-MM-DD
@@ -269,4 +287,5 @@
     <!-- Botón para registrar visitante -->
     <button type="submit" class="btn btn-primary mt-4 w-100">Registrar Visitante</button>
 </form>
+
 
