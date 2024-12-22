@@ -29,30 +29,29 @@ namespace sisae.Pages.Visitas
         public List<SelectListItem> VisitadosSelectList { get; set; }
         public List<SelectListItem> VisitantesSelectList { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(string rut = null)
         {
-            // Generar lista de Visitantes
-            VisitantesSelectList = await _context.Visitantes.Select(v => new SelectListItem
+            // Si un RUT es proporcionado, intentar obtener el visitante
+            if (!string.IsNullOrEmpty(rut))
             {
-                Value = v.ID_Visitante.ToString(),
-                Text = $"{v.Apellido}, {v.Nombre} ({v.RUT})"
-            }).ToListAsync();
+                var visitante = await _context.Visitantes.FirstOrDefaultAsync(v => v.RUT == rut);
+                if (visitante == null)
+                {
+                    // Registrar el evento de visitante no encontrado y redirigir
+                    await _eventLoggerService.LogEventAsync("VisitanteNoEncontrado", "Visitante no encontrado, redirigiendo a creación de visitante", User?.Identity?.Name);
+                    return RedirectToPage("/Visitantes/Create", new { rut = rut });
+                }
+                else
+                {
+                    // Preseleccionar el visitante encontrado
+                    Visita = new Visita { ID_Visitante = visitante.ID_Visitante };
+                }
+            }
 
-            // Generar lista de Visitados con formato "Apellido, Nombre (Cargo)"
-            VisitadosSelectList = await _context.Visitados.Select(v => new SelectListItem
-            {
-                Value = v.ID_Visitado.ToString(),
-                Text = $"{v.Apellido}, {v.Nombre} ({v.Cargo})"
-            }).ToListAsync();
+            // Llenar las listas desplegables
+            await LlenarListasDesplegablesAsync();
 
-            // Establecer la fecha y hora actual como valores predeterminados
-            Visita = new Visita
-            {
-                Fecha_Visita = DateTime.Now.Date, // Fecha de hoy
-                Hora_Entrada = DateTime.Now.TimeOfDay // Hora actual
-            };
-
-            // Registrar el acceso a la creación de visitas
+            // Registrar el acceso a la página de creación de visitas
             await _eventLoggerService.LogEventAsync("AccesoCrearVisita", "Acceso a la página de creación de visitas", User?.Identity?.Name);
 
             return Page();
@@ -67,17 +66,7 @@ namespace sisae.Pages.Visitas
             if (!ModelState.IsValid)
             {
                 // Volver a cargar las listas en caso de error de validación
-                VisitantesSelectList = await _context.Visitantes.Select(v => new SelectListItem
-                {
-                    Value = v.ID_Visitante.ToString(),
-                    Text = $"{v.Apellido}, {v.Nombre} ({v.RUT})"
-                }).ToListAsync();
-
-                VisitadosSelectList = await _context.Visitados.Select(v => new SelectListItem
-                {
-                    Value = v.ID_Visitado.ToString(),
-                    Text = $"{v.Apellido}, {v.Nombre} ({v.Cargo})"
-                }).ToListAsync();
+                await LlenarListasDesplegablesAsync();
 
                 // Registrar error de validación
                 await _eventLoggerService.LogEventAsync("ErrorValidacionCrear", "Error de validación al crear una nueva visita", User?.Identity?.Name);
@@ -92,17 +81,7 @@ namespace sisae.Pages.Visitas
                 ModelState.AddModelError("Visita.ID_Visitante", "El visitante seleccionado no existe");
 
                 // Volver a cargar las listas en caso de error
-                VisitantesSelectList = await _context.Visitantes.Select(v => new SelectListItem
-                {
-                    Value = v.ID_Visitante.ToString(),
-                    Text = $"{v.Apellido}, {v.Nombre} ({v.RUT})"
-                }).ToListAsync();
-
-                VisitadosSelectList = await _context.Visitados.Select(v => new SelectListItem
-                {
-                    Value = v.ID_Visitado.ToString(),
-                    Text = $"{v.Apellido}, {v.Nombre} ({v.Cargo})"
-                }).ToListAsync();
+                await LlenarListasDesplegablesAsync();
 
                 // Registrar error de visitante no encontrado
                 await _eventLoggerService.LogEventAsync("VisitanteNoEncontrado", "El visitante seleccionado no existe", User?.Identity?.Name);
@@ -118,6 +97,52 @@ namespace sisae.Pages.Visitas
             await _eventLoggerService.LogEventAsync("CrearVisita", $"Visita creada con ID {Visita.ID_Visita}", User?.Identity?.Name);
 
             return RedirectToPage("./Index");
+        }
+
+        public async Task<IActionResult> OnGetVerifyRutAsync(string rut)
+        {
+            if (string.IsNullOrEmpty(rut))
+            {
+                return BadRequest("El RUT es requerido.");
+            }
+
+            var visitante = await _context.Visitantes.FirstOrDefaultAsync(v => v.RUT == rut);
+            if (visitante == null)
+            {
+                return NotFound();
+            }
+
+            return new JsonResult(new { idVisitante = visitante.ID_Visitante });
+        }
+
+        private async Task LlenarListasDesplegablesAsync()
+        {
+            // Generar lista de Visitantes
+            VisitantesSelectList = await _context.Visitantes.Select(v => new SelectListItem
+            {
+                Value = v.ID_Visitante.ToString(),
+                Text = $"{v.Apellido}, {v.Nombre} ({v.RUT})"
+            }).ToListAsync();
+
+            // Generar lista de Visitados con formato "Apellido, Nombre (Cargo)"
+            VisitadosSelectList = await _context.Visitados.Select(v => new SelectListItem
+            {
+                Value = v.ID_Visitado.ToString(),
+                Text = $"{v.Apellido}, {v.Nombre} ({v.Cargo})"
+            }).ToListAsync();
+
+            // Si un visitante ya está preseleccionado, asegúrate de reflejar esto en la lista desplegable
+            if (Visita?.ID_Visitante != null)
+            {
+                foreach (var item in VisitantesSelectList)
+                {
+                    if (item.Value == Visita.ID_Visitante.ToString())
+                    {
+                        item.Selected = true;
+                        break;
+                    }
+                }
+            }
         }
     }
 }

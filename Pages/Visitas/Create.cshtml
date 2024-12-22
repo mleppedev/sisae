@@ -9,24 +9,36 @@
 <div class="container mt-5">
     <form method="post" class="row g-3">
         <div class="col-md-6">
+            <!-- Campo para ingresar el RUT del visitante -->
+            <div class="form-group">
+                <label for="rutInput" class="form-label">RUT del Visitante</label>
+                <input type="text" id="rutInput" class="form-control" placeholder="Ej: 12.345.678-9" />
+                <button type="button" id="checkRut" class="btn btn-secondary mt-2">Verificar RUT</button>
+                <div id="rutMessage" class="text-danger mt-2"></div>
+            </div>
+
+            <!-- Lista desplegable de visitantes -->
             <div class="form-group">
                 <label asp-for="Visita.ID_Visitante" class="form-label">Visitante</label>
                 <select asp-for="Visita.ID_Visitante" class="form-control" asp-items="Model.VisitantesSelectList"></select>
                 <span asp-validation-for="Visita.ID_Visitante" class="text-danger"></span>
             </div>
 
+            <!-- Lista desplegable de visitados -->
             <div class="form-group mt-3">
                 <label asp-for="Visita.ID_Visitado" class="form-label">Visitado</label>
                 <select asp-for="Visita.ID_Visitado" class="form-control" asp-items="Model.VisitadosSelectList"></select>
                 <span asp-validation-for="Visita.ID_Visitado" class="text-danger"></span>
             </div>
 
+            <!-- Motivo de la visita -->
             <div class="form-group mt-3">
                 <label asp-for="Visita.Motivo_Visita" class="form-label">Motivo de la Visita</label>
                 <input asp-for="Visita.Motivo_Visita" class="form-control" />
                 <span asp-validation-for="Visita.Motivo_Visita" class="text-danger"></span>
             </div>
 
+            <!-- Comentarios adicionales -->
             <div class="form-group mt-3">
                 <label asp-for="Visita.Comentarios" class="form-label">Comentarios</label>
                 <textarea asp-for="Visita.Comentarios" class="form-control"></textarea>
@@ -35,24 +47,28 @@
         </div>
 
         <div class="col-md-6">
+            <!-- Fecha de la visita -->
             <div class="form-group mt-3">
                 <label asp-for="Visita.Fecha_Visita" class="form-label">Fecha de Visita</label>
                 <input asp-for="Visita.Fecha_Visita" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
                 <span asp-validation-for="Visita.Fecha_Visita" class="text-danger"></span>
             </div>
 
+            <!-- Hora de entrada -->
             <div class="form-group mt-3">
                 <label asp-for="Visita.Hora_Entrada" class="form-label">Hora de Entrada</label>
                 <input asp-for="Visita.Hora_Entrada" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
                 <span asp-validation-for="Visita.Hora_Entrada" class="text-danger"></span>
             </div>
 
+            <!-- Hora de salida opcional -->
             <div class="form-group mt-3">
                 <label asp-for="Visita.Hora_Salida" class="form-label">Hora de Salida (Opcional)</label>
                 <input asp-for="Visita.Hora_Salida" class="form-control" />
                 <span asp-validation-for="Visita.Hora_Salida" class="text-danger"></span>
             </div>
 
+            <!-- Estado de la visita -->
             <div class="form-group mt-3">
                 <label asp-for="Visita.Estado" class="form-label">Estado de la Visita</label>
                 <select asp-for="Visita.Estado" class="form-control">
@@ -64,9 +80,88 @@
             </div>
         </div>
 
+        <!-- Botones para registrar o cancelar -->
         <div class="col-12 text-center mt-5">
             <button type="submit" class="btn btn-primary">Registrar Visita</button>
             <a asp-page="./Index" class="btn btn-secondary ms-2">Cancelar</a>
         </div>
     </form>
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById('checkRut').addEventListener('click', async function () {
+            const rutInputElement = document.getElementById('rutInput');
+            let rutInput = rutInputElement.value.trim();
+
+            if (validarRut(rutInput)) {
+                const rutFormateado = formatearRut(rutInput);
+                rutInputElement.value = rutFormateado; // Mostrar el RUT formateado
+
+                try {
+                    const response = await fetch(`?handler=VerifyRut&rut=${encodeURIComponent(rutFormateado)}`, { method: 'GET' });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        const visitanteSelect = document.querySelector('select[name="Visita.ID_Visitante"]');
+                        if (visitanteSelect) {
+                            visitanteSelect.value = data.idVisitante;
+                        }
+
+                        const message = document.getElementById('rutMessage');
+                        message.innerText = 'Visitante encontrado y seleccionado.';
+                        message.style.color = 'green';
+                    } else if (response.status === 404) {
+                        window.location.href = `/Visitantes/Create?rut=${encodeURIComponent(rutFormateado)}`;
+                    }
+                } catch (error) {
+                    console.error('Hubo un problema al verificar el RUT:', error);
+                }
+            } else {
+                alert("El RUT ingresado no es válido.");
+            }
+        });
+
+        // Función para validar el formato del RUT
+        function validarRut(rutCompleto) {
+            // Normalizar eliminando puntos y guiones
+            let rut = rutCompleto.replace(/[.\-]/g, '').toUpperCase();
+
+            // Validar carácter del RUT
+            if (!/^[0-9]+[0-9K]$/.test(rut)) return false;
+
+            const cuerpo = rut.slice(0, -1);
+            const dv = rut.slice(-1);
+
+            // Algoritmo de validación del RUT
+            let suma = 0;
+            let multiplo = 2;
+            
+            for (let i = cuerpo.length - 1; i >= 0; i--) {
+                suma += parseInt(cuerpo.charAt(i)) * multiplo;
+                multiplo = multiplo < 7 ? multiplo + 1 : 2;
+            }
+
+            const resto = 11 - (suma % 11);
+            const dvCalculado = resto === 11 ? '0' : resto === 10 ? 'K' : resto.toString();
+
+            // Si no es válido, retorna falso
+            if (dvCalculado !== dv) return false;
+
+            // Formatear RUT correctamente
+            return formatearRut(cuerpo + dv);
+        }
+
+        function formatearRut(rut) {
+            let cuerpo = rut.slice(0, -1);
+            let dv = rut.slice(-1);
+
+            // Agrega puntos cada tres dígitos desde el final del cuerpo del RUT
+            cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            
+            // Retornar cuerpo formateado con el dígito verificador (dv)
+            return `${cuerpo}-${dv}`;
+        }
+    </script>
+}
