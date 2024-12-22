@@ -27,6 +27,20 @@
             </thead>
             <tbody></tbody>
         </table>
+
+        <!-- Tabla de intentos prohibidos -->
+        <table id="prohibidosTable" class="table table-bordered mt-3">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Fecha y Hora</th>
+                    <th>RUT</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Motivo</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 </div>
 
@@ -99,35 +113,35 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Configuración del contexto del gráfico de Chart.js
             const ctx = document.getElementById('realtimeChart').getContext('2d');
 
-            // Inicialización del gráfico
+            // Inicialización del gráfico de líneas
             const chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: [], // Etiquetas de tiempo
+                    labels: [], // Etiquetas en el eje X (vacío inicialmente)
                     datasets: [{
                         label: 'Visitas',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         borderColor: 'rgb(75, 192, 192)',
                         borderWidth: 1,
-                        data: [] // Los datos se actualizarán aquí
+                        data: [] // Datos iniciales vacíos
                     }]
                 },
                 options: {
                     responsive: true,
                     scales: {
                         x: {
-                            type: 'category', // Escala categórica para las fechas
                             title: {
                                 display: true,
-                                text: 'Fecha y Hora'
+                                text: 'Fecha y Hora' // Título del eje X
                             }
                         },
                         y: {
                             title: {
                                 display: true,
-                                text: 'Cantidad de Visitas'
+                                text: 'Cantidad de Visitas' // Título del eje Y
                             },
                             beginAtZero: true
                         }
@@ -135,21 +149,26 @@
                 }
             });
 
-            // Conexión a SignalR
+            // Configuración de la conexión SignalR
             const connection = new signalR.HubConnectionBuilder()
-                .withUrl("http://localhost:5278/dashboardHub", { transport: signalR.HttpTransportType.WebSockets })
+                .withUrl("http://localhost:5278/dashboardHub")
+                .configureLogging(signalR.LogLevel.Information)
                 .build();
 
-            // Manejador de mensajes recibidos
+            // Iniciar la conexión con SignalR
+            connection.start()
+                .then(() => console.log("Conexión a SignalR establecida"))
+                .catch(err => console.error("Error en SignalR:", err.toString()));
+
+            // Manejador para la recepción de visitas permitidas
             connection.on("ReceiveVisita", (message) => {
                 const newData = JSON.parse(message);
-                console.log("Mensaje recibido:", newData);
 
-                // Actualizar el gráfico
-                chart.data.labels.push(newData.fecha); // Añadir fecha al eje X
+                // Actualizar el gráfico con nuevos datos
+                chart.data.labels.push(newData.fecha); // Añadir la fecha al eje X
                 chart.data.datasets[0].data.push(chart.data.datasets[0].data.length + 1); // Contador de visitas
-                
-                // Limitar a 10 puntos para evitar desbordamiento
+
+                // Limitar a 10 puntos para evitar desbordamiento en el gráfico
                 if (chart.data.labels.length > 10) {
                     chart.data.labels.shift();
                     chart.data.datasets[0].data.shift();
@@ -157,7 +176,7 @@
 
                 chart.update(); // Actualizar el gráfico
 
-                // Actualizar la tabla
+                // Actualizar la tabla de visitas permitidas
                 const tableBody = document.querySelector("#visitasTable tbody");
                 const row = document.createElement("tr");
                 row.innerHTML = `
@@ -175,9 +194,27 @@
                 }
             });
 
-            connection.start()
-                .then(() => console.log("Conexión a SignalR establecida"))
-                .catch(err => console.error("Error en SignalR:", err.toString()));
+            // Manejador para la recepción de intentos de acceso prohibidos
+            connection.on("ReceiveAccesoProhibido", (message) => {
+                const newData = JSON.parse(message);
+
+                // Actualizar la tabla de intentos prohibidos
+                const prohibitedBody = document.querySelector("#prohibidosTable tbody");
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${newData.fecha}</td>
+                    <td>${newData.rut}</td>
+                    <td>${newData.nombre}</td>
+                    <td>${newData.apellido}</td>
+                    <td>${newData.motivo}</td>
+                `;
+                prohibitedBody.appendChild(row);
+
+                // Limitar las filas de la tabla a 10
+                if (prohibitedBody.rows.length > 10) {
+                    prohibitedBody.deleteRow(0);
+                }
+            });
         });
     </script>
 }

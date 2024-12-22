@@ -43,4 +43,30 @@ public class DashboardHub : Hub
             Context.User?.Identity?.Name ?? "Sistema"
         );
     }
+
+    public async Task SendAccesoProhibidoUpdate(VisitaProhibidosDto visitaProhibidosDto)
+    {
+        if (visitaProhibidosDto == null) throw new ArgumentNullException(nameof(visitaProhibidosDto));
+
+        var message = JsonSerializer.Serialize(new
+        {
+            fecha = visitaProhibidosDto.Fecha.ToString("dd-MM-yyyy HH:mm"),
+            rut = visitaProhibidosDto.RUT,
+            nombre = visitaProhibidosDto.Nombre,
+            apellido = visitaProhibidosDto.Apellido,
+            motivo = visitaProhibidosDto.Motivo
+        });
+
+        Console.WriteLine($"Mensaje de acceso prohibido serializado: {message}");
+
+        // Enviar mensaje a los clientes
+        await Clients.All.SendAsync("ReceiveAccesoProhibido", message);
+
+        // Registrar evento en el log
+        await _eventLoggerService.LogEventAsync(
+            "SendAccesoProhibidoUpdate",
+            $"Intento de acceso prohibido enviado: RUT {visitaProhibidosDto.RUT}, Motivo: {visitaProhibidosDto.Motivo}",
+            Context.User?.Identity?.Name ?? "Sistema"
+        );
+    }
 }

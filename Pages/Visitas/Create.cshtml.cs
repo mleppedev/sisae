@@ -114,6 +114,25 @@ namespace sisae.Pages.Visitas
                     User?.Identity?.Name
                 );
 
+                // Enviar al DashboardHub
+                var visitaProhibidosDto = new VisitaProhibidosDto
+                {
+                    Fecha = DateTime.Now,
+                    RUT = visitante.RUT,
+                    Nombre = visitante.Nombre,
+                    Apellido = visitante.Apellido,
+                    Motivo = accesoProhibido.Motivo
+                };
+
+                try
+                {
+                    await _signalRService.SendAccesoProhibidoUpdateAsync(visitaProhibidosDto);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al enviar el intento prohibido al DashboardHub: {ex.Message}");
+                }
+
                 // Agregar un error al modelo
                 ModelState.AddModelError(string.Empty, "El visitante tiene acceso prohibido y no puede registrarse.");
                 await LlenarListasDesplegablesAsync();
