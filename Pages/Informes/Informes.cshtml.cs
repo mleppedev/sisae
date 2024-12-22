@@ -14,11 +14,13 @@ namespace sisae.Pages.Informes
     {
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _env;
+        private readonly EventLoggerService _eventLoggerService;
 
-        public InformesModel(IConfiguration configuration, IWebHostEnvironment env)
+        public InformesModel(IConfiguration configuration, IWebHostEnvironment env, EventLoggerService eventLoggerService)
         {
             _configuration = configuration;
             _env = env;
+            _eventLoggerService = eventLoggerService;
         }
 
         [BindProperty]
@@ -31,9 +33,22 @@ namespace sisae.Pages.Informes
         {
             if (!string.IsNullOrEmpty(Consulta))
             {
+                 await _eventLoggerService.LogEventAsync(
+                    "OnPostAsync",
+                    $"Consulta recibida del usuario: {Consulta}",
+                    User?.Identity?.Name
+                );
+                
                 int maxIteraciones = 5;
                 for (int i = 0; i < maxIteraciones; i++)
                 {
+                    // Log: intentando generar la consulta SQL
+                    await _eventLoggerService.LogEventAsync(
+                        "GenerarConsultaSQL",
+                        $"Intento #{i + 1} de generar la consulta SQL basada en la consulta natural.",
+                        User?.Identity?.Name
+                    );
+
                     string sqlQuery = await GenerarConsultaSQL(Consulta);
 
                     try
@@ -44,12 +59,34 @@ namespace sisae.Pages.Informes
                     }
                     catch (SqlException ex)
                     {
+                        // Log: error al ejecutar la consulta
+                        await _eventLoggerService.LogEventAsync(
+                            "EjecutarConsultaSQL_Error",
+                            $"Error al ejecutar la consulta. Mensaje: {ex.Message}",
+                            User?.Identity?.Name
+                        );
+
+                        // Si ya es el último intento, devolver el error
                         if (i == maxIteraciones - 1)
                         {
                             Respuesta = new List<Dictionary<string, object>> { new Dictionary<string, object> { { "Error", "No se pudo generar una consulta válida después de varios intentos." } } };
+                        
+                            // Log: se agotaron los intentos
+                            await _eventLoggerService.LogEventAsync(
+                                "GenerarConsultaSQL_Fallo",
+                                "Se agotaron los intentos de corrección de la consulta SQL sin éxito.",
+                                User?.Identity?.Name
+                            );
                         }
                         else
                         {
+                            // Log: se procede a corregir la consulta
+                            await _eventLoggerService.LogEventAsync(
+                                "CorregirErrorSQL",
+                                $"Intentando corregir la consulta SQL (Iteración #{i + 1}). Error original: {ex.Message}",
+                                User?.Identity?.Name
+                            );
+
                             // Si hay error, corregir
                             Consulta = await CorregirErrorSQL(sqlQuery, ex.Message);
                         }
@@ -61,6 +98,13 @@ namespace sisae.Pages.Informes
         // Método para corregir el error de SQL
         private async Task<string> CorregirErrorSQL(string sqlQuery, string errorMessage)
         {
+            // Log: inicio de la corrección del error
+            await _eventLoggerService.LogEventAsync(
+                "CorregirErrorSQL",
+                $"Iniciando corrección de error SQL con mensaje: {errorMessage}",
+                User?.Identity?.Name
+            );
+
             using (HttpClient client = new HttpClient())
             {
                 var requestBody = new
@@ -83,10 +127,25 @@ namespace sisae.Pages.Informes
                 {
                     var result = await response.Content.ReadAsStringAsync();
                     var jsonResponse = JsonDocument.Parse(result);
+
+                    // Log: corrección recibida satisfactoriamente
+                    await _eventLoggerService.LogEventAsync(
+                        "CorregirErrorSQL",
+                        $"Se recibió una posible corrección de la consulta SQL.",
+                        User?.Identity?.Name
+                    );
+
                     return jsonResponse.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
                 }
                 else
                 {
+                    // Log: fallo al contactar la API de OpenAI
+                    await _eventLoggerService.LogEventAsync(
+                        "CorregirErrorSQL_Error",
+                        $"No se pudo contactar a la API para corregir el SQL. Codigo HTTP: {response.StatusCode}",
+                        User?.Identity?.Name
+                    );
+
                     return sqlQuery; // Si no puede corregir el error, devolver la consulta original
                 }
             }
@@ -97,6 +156,13 @@ namespace sisae.Pages.Informes
         {
             if (string.IsNullOrEmpty(sqlQuery))
             {
+                // Log: la consulta está vacía
+                await _eventLoggerService.LogEventAsync(
+                    "EjecutarConsultaSQL",
+                    "La consulta SQL está vacía o no es válida, se retorna un error.",
+                    User?.Identity?.Name
+                );
+
                 return new List<Dictionary<string, object>> { new Dictionary<string, object> { { "Error", "La consulta SQL está vacía o no es válida." } } };
             }
 
@@ -122,15 +188,37 @@ namespace sisae.Pages.Informes
                             }
                             resultado.Add(row);
                         }
+
+                        // Log: se obtuvo un conjunto de filas
+                        await _eventLoggerService.LogEventAsync(
+                            "EjecutarConsultaSQL",
+                            $"Se obtuvieron {resultado.Count} filas en la consulta.",
+                            User?.Identity?.Name
+                        );
+
                         return resultado;
                     }
                     else
                     {
+                        // Log: la consulta no devolvió filas
+                        await _eventLoggerService.LogEventAsync(
+                            "EjecutarConsultaSQL",
+                            "La consulta no arrojó resultados (HasRows = false).",
+                            User?.Identity?.Name
+                        );
+
                         return new List<Dictionary<string, object>> { new Dictionary<string, object> { { "Mensaje", "No se encontraron resultados." } } };
                     }
                 }
                 catch (SqlException ex)
                 {
+                    // Log: error al ejecutar la consulta
+                    await _eventLoggerService.LogEventAsync(
+                        "EjecutarConsultaSQL_Exception",
+                        $"Excepción SQL: {ex.Message}",
+                        User?.Identity?.Name
+                    );
+
                     return new List<Dictionary<string, object>> { new Dictionary<string, object> { { "Error", $"Error al ejecutar la consulta SQL: {ex.Message}" } } };
                 }
             }
@@ -139,10 +227,24 @@ namespace sisae.Pages.Informes
         // Método para generar la consulta SQL en base a la pregunta natural
         private async Task<string> GenerarConsultaSQL(string consultaNatural)
         {
+            // Log: inicio de la generación de la consulta SQL
+            await _eventLoggerService.LogEventAsync(
+                "GenerarConsultaSQL",
+                "Iniciando la generación de la consulta en base al lenguaje natural proporcionado por el usuario.",
+                User?.Identity?.Name
+            );
+
             string estructuraBaseDeDatos = await LeerEstructuraBaseDeDatos();
 
             if (string.IsNullOrEmpty(estructuraBaseDeDatos))
             {
+                // Log: no se encontró la estructura de la BD
+                await _eventLoggerService.LogEventAsync(
+                    "GenerarConsultaSQL_Error",
+                    "No se pudo leer la estructura de la base de datos (archivo sisae.json).",
+                    User?.Identity?.Name
+                );
+
                 return "Error: No se pudo leer la estructura de la base de datos.";
             }
 
@@ -175,6 +277,13 @@ namespace sisae.Pages.Informes
                 var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
                 client.DefaultRequestHeaders.Add("Authorization", _configuration["ApiKeys:OpenAI"]);
 
+                // Log: enviando la solicitud a la API de OpenAI
+                await _eventLoggerService.LogEventAsync(
+                    "GenerarConsultaSQL",
+                    "Enviando la petición a OpenAI para generar la consulta SQL.",
+                    User?.Identity?.Name
+                );
+
                 var response = await client.PostAsync("https://api.openai.com/v1/chat/completions", content);
                 if (response.IsSuccessStatusCode)
                 {
@@ -183,10 +292,18 @@ namespace sisae.Pages.Informes
                     string sqlQuery = jsonResponse.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
                     sqlQuery = LimpiarConsultaSQL(sqlQuery);
                     SqlQuery = sqlQuery;
+
                     return SqlQuery;
                 }
                 else
                 {
+                    // Log: fallo de la API
+                    await _eventLoggerService.LogEventAsync(
+                        "GenerarConsultaSQL_Error",
+                        $"La API de OpenAI devolvió un error: {response.StatusCode}",
+                        User?.Identity?.Name
+                    );
+
                     return null;
                 }
             }
@@ -195,6 +312,13 @@ namespace sisae.Pages.Informes
         // Método para generar una respuesta en lenguaje natural a partir del resultado SQL
         private async Task<string> GenerarRespuestaNatural(string resultadoSQL)
         {
+            // Log: inicio de la conversión de resultado SQL a lenguaje natural
+            await _eventLoggerService.LogEventAsync(
+                "GenerarRespuestaNatural",
+                "Convirtiendo el resultado SQL a una respuesta en lenguaje natural.",
+                User?.Identity?.Name
+            );
+
             using (HttpClient client = new HttpClient())
             {
                 var requestBody = new
@@ -217,10 +341,25 @@ namespace sisae.Pages.Informes
                 {
                     var result = await response.Content.ReadAsStringAsync();
                     var jsonResponse = JsonDocument.Parse(result);
+
+                    // Log: respuesta en lenguaje natural generada con éxito
+                    await _eventLoggerService.LogEventAsync(
+                        "GenerarRespuestaNatural",
+                        "Respuesta en lenguaje natural generada correctamente.",
+                        User?.Identity?.Name
+                    );
+
                     return jsonResponse.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
                 }
                 else
                 {
+                    // Log: fallo al solicitar la generación del texto
+                    await _eventLoggerService.LogEventAsync(
+                        "GenerarRespuestaNatural_Error",
+                        $"Error al generar la respuesta natural. HTTP Status: {response.StatusCode}",
+                        User?.Identity?.Name
+                    );
+
                     return "Error al generar la respuesta.";
                 }
             }
@@ -228,17 +367,38 @@ namespace sisae.Pages.Informes
 
         private async Task<string> LeerEstructuraBaseDeDatos()
         {
+            // Log: leyendo el archivo con la estructura de la BD
+            await _eventLoggerService.LogEventAsync(
+                "LeerEstructuraBaseDeDatos",
+                "Intentando leer la estructura de la base de datos desde el archivo sisae.json",
+                User?.Identity?.Name
+            );
+
             string filePath = Path.Combine(_env.WebRootPath, "Data", "sisae.json");
 
             if (System.IO.File.Exists(filePath))
             {
                 using (StreamReader reader = new StreamReader(filePath))
                 {
+                    // Log: archivo leído con éxito
+                    await _eventLoggerService.LogEventAsync(
+                        "LeerEstructuraBaseDeDatos",
+                        "Archivo sisae.json leído correctamente.",
+                        User?.Identity?.Name
+                    );
+
                     return await reader.ReadToEndAsync();
                 }
             }
             else
             {
+                // Log: archivo no encontrado
+                await _eventLoggerService.LogEventAsync(
+                    "LeerEstructuraBaseDeDatos_Error",
+                    "No se encontró el archivo sisae.json en la carpeta Data.",
+                    User?.Identity?.Name
+                );
+
                 return null; // Manejar el error si el archivo no existe
             }
         }
@@ -256,6 +416,14 @@ namespace sisae.Pages.Informes
 
             // Quita espacios innecesarios al principio o final
             consulta = consulta.Trim();
+
+            // Log: se ha limpiado la consulta SQL
+            //_eventLoggerService no es async => no usar await, o bien hacerlo en un método async separado si lo deseas
+            _eventLoggerService.LogEventAsync(
+                "LimpiarConsultaSQL",
+                $"Consulta SQL limpiada: {consulta}",
+                User?.Identity?.Name
+            );
 
             return consulta;
         }

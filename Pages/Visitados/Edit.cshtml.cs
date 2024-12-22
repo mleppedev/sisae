@@ -10,10 +10,12 @@ namespace sisae.Pages.Visitados
     public class EditModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly EventLoggerService _eventLoggerService;
 
-        public EditModel(ApplicationDbContext context)
+        public EditModel(ApplicationDbContext context, EventLoggerService eventLoggerService)
         {
             _context = context;
+            _eventLoggerService = eventLoggerService;
         }
 
         [BindProperty]
@@ -26,8 +28,13 @@ namespace sisae.Pages.Visitados
 
             if (Visitado == null)
             {
+                // Registrar el intento de editar un Visitado no encontrado
+                await _eventLoggerService.LogEventAsync("EditarVisitadoNoEncontrado", $"Intento de editar un visitado con ID {id} no encontrado", User?.Identity?.Name);
                 return NotFound();
             }
+
+            // Registrar el acceso a la página de edición del visitado
+            await _eventLoggerService.LogEventAsync("AccesoEditarVisitado", $"Acceso a edición del visitado con ID {id}", User?.Identity?.Name);
 
             return Page();
         }
@@ -37,6 +44,8 @@ namespace sisae.Pages.Visitados
             // Validar el modelo
             if (!ModelState.IsValid)
             {
+                // Registrar el error de validación
+                await _eventLoggerService.LogEventAsync("ErrorValidacionEditarVisitado", "Error de validación al editar un visitado", User?.Identity?.Name);
                 return Page();
             }
 
@@ -45,6 +54,8 @@ namespace sisae.Pages.Visitados
 
             if (visitadoToUpdate == null)
             {
+                // Registrar si el visitado a editar no se encontró durante el POST
+                await _eventLoggerService.LogEventAsync("EditarVisitadoNoEncontradoPost", $"Intento de editar un visitado con ID {Visitado.ID_Visitado} no encontrado durante el POST", User?.Identity?.Name);
                 return NotFound();
             }
 
@@ -57,15 +68,20 @@ namespace sisae.Pages.Visitados
                 try
                 {
                     await _context.SaveChangesAsync();
+
+                    // Registrar el evento después de la edición exitosa
+                    await _eventLoggerService.LogEventAsync("EditarVisitado", $"Visitado con ID {Visitado.ID_Visitado} editado exitosamente", User?.Identity?.Name);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!VisitadoExists(Visitado.ID_Visitado))
                     {
+                        await _eventLoggerService.LogEventAsync("ErrorEdicionVisitadoInexistente", $"El visitado con ID {Visitado.ID_Visitado} no existe en la base de datos al intentar editar", User?.Identity?.Name);
                         return NotFound();
                     }
                     else
                     {
+                        await _eventLoggerService.LogEventAsync("ErrorConcurrencia", $"Excepción concurrente al editar el visitado con ID {Visitado.ID_Visitado}", User?.Identity?.Name);
                         throw;
                     }
                 }

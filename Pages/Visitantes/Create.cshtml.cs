@@ -13,11 +13,13 @@ namespace sisae.Pages.Visitantes
     {
         private readonly ApplicationDbContext _context;
         private readonly GoogleCloudVisionService _visionService;
+        private readonly EventLoggerService _eventLoggerService;
 
-        public CreateModel(ApplicationDbContext context, GoogleCloudVisionService visionService)
+        public CreateModel(ApplicationDbContext context, GoogleCloudVisionService visionService, EventLoggerService eventLoggerService)
         {
             _context = context;
             _visionService = visionService;
+            _eventLoggerService = eventLoggerService;
         }
 
         [BindProperty]
@@ -49,6 +51,9 @@ namespace sisae.Pages.Visitantes
 
                 // Guardar los cambios en la base de datos
                 _context.Visitantes.Update(visitanteExistente);
+
+                // EventLogger: Log event
+                await _eventLoggerService.LogEventAsync("ActualizaciónVisitante", $"Visitante con RUT {Visitante.RUT} actualizado.", User?.Identity?.Name);
             }
             else
             {
@@ -68,6 +73,9 @@ namespace sisae.Pages.Visitantes
                 };
 
                 _context.Visitantes.Add(nuevoVisitante);
+
+                // EventLogger: Log event
+                await _eventLoggerService.LogEventAsync("CreaciónVisitante", $"Nuevo visitante con RUT {Visitante.RUT} creado.", User?.Identity?.Name);
             }
 
             await _context.SaveChangesAsync();
@@ -86,7 +94,7 @@ namespace sisae.Pages.Visitantes
 
                     if (string.IsNullOrEmpty(base64Image))
                     {
-                        return new JsonResult(new { success = false, message = "No se ha proporcionado una imagen v�lida." });
+                        return new JsonResult(new { success = false, message = "No se ha proporcionado una imagen válida." });
                     }
 
                     // Procesar la imagen con Google Cloud Vision OCR
@@ -131,6 +139,8 @@ namespace sisae.Pages.Visitantes
                             nacimiento = visitanteExistente.FechaNacimiento.ToString("yyyy-MM-dd"),
                             vencimiento = visitanteExistente.FechaVencimientoCarnet.ToString("yyyy-MM-dd")
                         });
+
+                         await _eventLoggerService.LogEventAsync("EscaneoOCR", $"El escaneo OCR coincidió con un visitante existente con RUT {run}.", User?.Identity?.Name);
                     }
                     else
                     {
@@ -146,6 +156,8 @@ namespace sisae.Pages.Visitantes
                             nacimiento,
                             vencimiento
                         });
+
+                        await _eventLoggerService.LogEventAsync("EscaneoOCR", $"Escaneo OCR procesado, sin coincidencia para RUT {run}.", User?.Identity?.Name);
                     }
                 }
                 else

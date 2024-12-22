@@ -14,10 +14,12 @@ namespace sisae.Pages.Visitas
     public class EditModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly EventLoggerService _eventLoggerService;
 
-        public EditModel(ApplicationDbContext context)
+        public EditModel(ApplicationDbContext context, EventLoggerService eventLoggerService)
         {
             _context = context;
+            _eventLoggerService = eventLoggerService;
         }
 
         [BindProperty]
@@ -31,14 +33,15 @@ namespace sisae.Pages.Visitas
         {
             if (id == null)
             {
+                await _eventLoggerService.LogEventAsync("ErrorAcceso", "Intento de acceso al editor de visitas sin especificar ID", User?.Identity?.Name);
                 return NotFound();
             }
 
             // Buscar la visita por su ID
             Visita = await _context.Visitas.FindAsync(id);
-
             if (Visita == null)
             {
+                await _eventLoggerService.LogEventAsync("VisitaNoEncontrada", $"No se encontr贸 la visita con ID {id}", User?.Identity?.Name);
                 return NotFound();
             }
 
@@ -50,6 +53,7 @@ namespace sisae.Pages.Visitas
                 Text = $"{v.Apellido}, {v.Nombre} ({v.RUT})"
             }).ToListAsync();
 
+            await _eventLoggerService.LogEventAsync("AccesoEditorVisita", $"Acceso al editor de visitas para la visita con ID {id}", User?.Identity?.Name);
             return Page();
         }
 
@@ -62,13 +66,15 @@ namespace sisae.Pages.Visitas
 
             if (!ModelState.IsValid)
             {
-                // Volver a cargar los datos en caso de error de validaci髇
+                // Volver a cargar los datos en caso de error de validaci贸n
                 Visitados = await _context.Visitados.ToListAsync();
                 VisitantesSelectList = await _context.Visitantes.Select(v => new SelectListItem
                 {
                     Value = v.ID_Visitante.ToString(),
                     Text = $"{v.Apellido}, {v.Nombre} ({v.RUT})"
                 }).ToListAsync();
+
+                await _eventLoggerService.LogEventAsync("ErrorValidacionEditar", "Error de validaci贸n al editar la visita", User?.Identity?.Name);
                 return Page();
             }
 
@@ -78,15 +84,18 @@ namespace sisae.Pages.Visitas
             try
             {
                 await _context.SaveChangesAsync();
+                await _eventLoggerService.LogEventAsync("VisitaEditada", $"Visita con ID {Visita.ID_Visita} editada exitosamente", User?.Identity?.Name);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 if (!VisitaExists(Visita.ID_Visita))
                 {
+                    await _eventLoggerService.LogEventAsync("ErrorEdicion", $"Fallo al editar: la visita con ID {Visita.ID_Visita} no existe. Error: {ex.Message}", User?.Identity?.Name);
                     return NotFound();
                 }
                 else
                 {
+                    await _eventLoggerService.LogEventAsync("ErrorEdicion", $"Excepci贸n concurrente al editar la visita con ID {Visita.ID_Visita}. Error: {ex.Message}", User?.Identity?.Name);
                     throw;
                 }
             }

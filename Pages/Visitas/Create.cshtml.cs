@@ -14,10 +14,13 @@ namespace sisae.Pages.Visitas
     public class CreateModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly EventLoggerService _eventLoggerService;
 
-        public CreateModel(ApplicationDbContext context)
+        // Constructor que inyecta la base de datos y el servicio de registro de eventos
+        public CreateModel(ApplicationDbContext context, EventLoggerService eventLoggerService)
         {
             _context = context;
+            _eventLoggerService = eventLoggerService;
         }
 
         [BindProperty]
@@ -49,6 +52,9 @@ namespace sisae.Pages.Visitas
                 Hora_Entrada = DateTime.Now.TimeOfDay // Hora actual
             };
 
+            // Registrar el acceso a la creación de visitas
+            await _eventLoggerService.LogEventAsync("AccesoCrearVisita", "Acceso a la página de creación de visitas", User?.Identity?.Name);
+
             return Page();
         }
 
@@ -73,6 +79,9 @@ namespace sisae.Pages.Visitas
                     Text = $"{v.Apellido}, {v.Nombre} ({v.Cargo})"
                 }).ToListAsync();
 
+                // Registrar error de validación
+                await _eventLoggerService.LogEventAsync("ErrorValidacionCrear", "Error de validación al crear una nueva visita", User?.Identity?.Name);
+
                 return Page();
             }
 
@@ -81,6 +90,7 @@ namespace sisae.Pages.Visitas
             if (visitante == null)
             {
                 ModelState.AddModelError("Visita.ID_Visitante", "El visitante seleccionado no existe");
+
                 // Volver a cargar las listas en caso de error
                 VisitantesSelectList = await _context.Visitantes.Select(v => new SelectListItem
                 {
@@ -94,12 +104,18 @@ namespace sisae.Pages.Visitas
                     Text = $"{v.Apellido}, {v.Nombre} ({v.Cargo})"
                 }).ToListAsync();
 
+                // Registrar error de visitante no encontrado
+                await _eventLoggerService.LogEventAsync("VisitanteNoEncontrado", "El visitante seleccionado no existe", User?.Identity?.Name);
+
                 return Page();
             }
 
             // Guardar la nueva visita
             _context.Visitas.Add(Visita);
             await _context.SaveChangesAsync();
+
+            // Registrar el evento después de guardar la visita
+            await _eventLoggerService.LogEventAsync("CrearVisita", $"Visita creada con ID {Visita.ID_Visita}", User?.Identity?.Name);
 
             return RedirectToPage("./Index");
         }
