@@ -15,6 +15,7 @@ namespace sisae.Pages.Informes
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _env;
         private readonly EventLoggerService _eventLoggerService;
+        private const int MaxIteraciones = 5;
 
         public InformesModel(IConfiguration configuration, IWebHostEnvironment env, EventLoggerService eventLoggerService)
         {
@@ -26,72 +27,104 @@ namespace sisae.Pages.Informes
         [BindProperty]
         public string Consulta { get; set; }
 
+        [BindProperty]
+        public string SelectedQuery { get; set; }
+
         public List<Dictionary<string, object>> Respuesta { get; set; } // Cambiado a List<Dictionary<string, object>>
         public string SqlQuery { get; set; }
 
         public async Task OnPostAsync()
         {
-            if (!string.IsNullOrEmpty(Consulta))
+            if (!string.IsNullOrEmpty(SelectedQuery))
             {
-                 await _eventLoggerService.LogEventAsync(
-                    "OnPostAsync",
-                    $"Consulta recibida del usuario: {Consulta}",
-                    User?.Identity?.Name
-                );
-                
+                // Asignar la consulta en base a la opción seleccionada
+                switch (SelectedQuery)
+                {
+                    case "1":
+                        SqlQuery = "SELECT TOP 1 CONCAT(VU.NOMBRE, ' ', VU.APELLIDO) AS VISITANTE, COUNT(V.ID_Visita) AS TOTAL_VISITAS FROM Visitas V JOIN Visitantes VU ON V.ID_Visitante = VU.ID_Visitante GROUP BY CONCAT(VU.NOMBRE, ' ', VU.APELLIDO) ORDER BY TOTAL_VISITAS DESC;";
+                        break;
+                    case "2":
+                        SqlQuery = "SELECT TOP 100 UPPER(CONCAT(v.NOMBRE, ' ', v.APELLIDO)) AS VISITANTE, CONVERT(VARCHAR, a.FECHA_PROHIBICION, 103) AS 'FECHA PROHIBICION', CONVERT(VARCHAR, a.FECHA_EXPIRACION, 103) AS 'FECHA EXPIRACION', UPPER(a.MOTIVO) AS MOTIVO FROM AccesosProhibidos a JOIN Visitantes v ON a.ID_Visitante = v.ID_Visitante ORDER BY a.FECHA_PROHIBICION DESC, a.FECHA_EXPIRACION DESC;";
+                        break;
+                    case "3":
+                        SqlQuery = "SELECT COUNT(*) AS TOTAL_VISITAS_HOY FROM Visitas WHERE CONVERT(VARCHAR, Fecha_Visita, 103) = CONVERT(VARCHAR, GETDATE(), 103);";
+                        break;
+                    case "4":
+                        SqlQuery = "SELECT TOP 100 UPPER(NOMBRE + ' ' + APELLIDO) AS VISITADO, UPPER(CARGO) AS CARGO, UPPER(DEPARTAMENTO) AS DEPARTAMENTO, UPPER(EMAIL) AS EMAIL, TELEFONO FROM Visitados ORDER BY VISITADO;";
+                        break;
+                    case "5":
+                        SqlQuery = "SELECT TOP 100 UPPER(CONCAT(vd.Nombre, ' ', vd.Apellido)) AS VISITADO, COUNT(v.ID_Visita) AS TOTAL_VISITAS FROM Visitas v JOIN Visitados vd ON v.ID_Visitado = vd.ID_Visitado GROUP BY vd.Nombre, vd.Apellido ORDER BY COUNT(v.ID_Visita) DESC, MAX(v.Fecha_Visita) DESC, MAX(v.Hora_Entrada) DESC;";
+                        break;
+                    case "6":
+                        SqlQuery = "SELECT TOP 100 CONCAT(VISITANTES.NOMBRE, ' ', VISITANTES.APELLIDO) AS VISITANTE, CONCAT(VISITADOS.NOMBRE, ' ', VISITADOS.APELLIDO) AS VISITADO, COUNT(Visitas.ID_Visita) AS CANTIDAD_VISITAS FROM Visitas JOIN Visitantes ON Visitas.ID_Visitante = Visitantes.ID_Visitante JOIN Visitados ON Visitas.ID_Visitado = Visitados.ID_Visitado GROUP BY CONCAT(VISITANTES.NOMBRE, ' ', VISITANTES.APELLIDO), CONCAT(VISITADOS.NOMBRE, ' ', VISITADOS.APELLIDO) ORDER BY CANTIDAD_VISITAS DESC;";
+                        break;
+                    // Agregar más casos según sea necesario
+                }
+
+                // Ejecutar la consulta directamente
+                Respuesta = await EjecutarConsultaSQL(SqlQuery);
+            }
+            else if (!string.IsNullOrEmpty(Consulta))
+            {
+                // Lógica existente para manejar consultas en lenguaje natural
+                await _eventLoggerService.LogEventAsync("OnPostAsync", $"Consulta recibida del usuario: {Consulta}", User?.Identity?.Name);
+
                 int maxIteraciones = 5;
                 for (int i = 0; i < maxIteraciones; i++)
                 {
-                    // Log: intentando generar la consulta SQL
-                    await _eventLoggerService.LogEventAsync(
-                        "GenerarConsultaSQL",
-                        $"Intento #{i + 1} de generar la consulta SQL basada en la consulta natural.",
-                        User?.Identity?.Name
-                    );
-
+                    await _eventLoggerService.LogEventAsync("GenerarConsultaSQL", $"Intento #{i + 1} de generar la consulta SQL...", User?.Identity?.Name);
                     string sqlQuery = await GenerarConsultaSQL(Consulta);
 
                     try
                     {
-                        // Ejecutar la consulta generada
+                        // Intenta ejecutar la consulta generada
                         Respuesta = await EjecutarConsultaSQL(sqlQuery);
-                        break;
+                        SqlQuery = sqlQuery; // Muestra la consulta generada en la UI
+                        break; // Sale del bucle si la ejecución es exitosa
                     }
                     catch (SqlException ex)
                     {
-                        // Log: error al ejecutar la consulta
-                        await _eventLoggerService.LogEventAsync(
-                            "EjecutarConsultaSQL_Error",
-                            $"Error al ejecutar la consulta. Mensaje: {ex.Message}",
-                            User?.Identity?.Name
-                        );
-
-                        // Si ya es el último intento, devolver el error
-                        if (i == maxIteraciones - 1)
-                        {
-                            Respuesta = new List<Dictionary<string, object>> { new Dictionary<string, object> { { "Error", "No se pudo generar una consulta válida después de varios intentos." } } };
-                        
-                            // Log: se agotaron los intentos
-                            await _eventLoggerService.LogEventAsync(
-                                "GenerarConsultaSQL_Fallo",
-                                "Se agotaron los intentos de corrección de la consulta SQL sin éxito.",
-                                User?.Identity?.Name
-                            );
-                        }
-                        else
-                        {
-                            // Log: se procede a corregir la consulta
-                            await _eventLoggerService.LogEventAsync(
-                                "CorregirErrorSQL",
-                                $"Intentando corregir la consulta SQL (Iteración #{i + 1}). Error original: {ex.Message}",
-                                User?.Identity?.Name
-                            );
-
-                            // Si hay error, corregir
-                            Consulta = await CorregirErrorSQL(sqlQuery, ex.Message);
-                        }
+                        await HandleSQLError(i, sqlQuery, ex);
                     }
                 }
+            }
+        }
+
+        private async Task HandleSQLError(int iteration, string sqlQuery, SqlException ex)
+        {
+            // Log: error al ejecutar la consulta
+            await _eventLoggerService.LogEventAsync(
+                "EjecutarConsultaSQL_Error",
+                $"Error al ejecutar la consulta. Mensaje: {ex.Message}",
+                User?.Identity?.Name
+            );
+
+            // Si ya es el último intento, devolver el error
+            int maxIteraciones = 5;
+            if (iteration == maxIteraciones - 1)
+            {
+                Respuesta = new List<Dictionary<string, object>> 
+                { 
+                    new Dictionary<string, object> { { "Error", "No se pudo generar una consulta válida después de varios intentos." } } 
+                };
+
+                await _eventLoggerService.LogEventAsync(
+                    "GenerarConsultaSQL_Fallo",
+                    "Se agotaron los intentos de corrección de la consulta SQL sin éxito.",
+                    User?.Identity?.Name
+                );
+            }
+            else
+            {
+                // Log: se procede a corregir la consulta
+                await _eventLoggerService.LogEventAsync(
+                    "CorregirErrorSQL",
+                    $"Intentando corregir la consulta SQL (Iteración #{iteration + 1}). Error original: {ex.Message}",
+                    User?.Identity?.Name
+                );
+
+                // Si hay error, corregir
+                Consulta = await CorregirErrorSQL(sqlQuery, ex.Message);
             }
         }
 

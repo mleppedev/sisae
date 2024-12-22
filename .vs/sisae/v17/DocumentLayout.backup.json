@@ -1,12 +1,71 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\src\\unab\\sisae\\sisae\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C17CCB8A-0840-4370-B8EC-BBC470D11F42}|sisae.csproj|c:\\src\\unab\\sisae\\sisae\\services\\eventloggerservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C17CCB8A-0840-4370-B8EC-BBC470D11F42}|sisae.csproj|solutionrelative:services\\eventloggerservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C17CCB8A-0840-4370-B8EC-BBC470D11F42}|sisae.csproj|c:\\src\\unab\\sisae\\sisae\\pages\\visitas\\create.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C17CCB8A-0840-4370-B8EC-BBC470D11F42}|sisae.csproj|solutionrelative:pages\\visitas\\create.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C17CCB8A-0840-4370-B8EC-BBC470D11F42}|sisae.csproj|c:\\src\\unab\\sisae\\sisae\\pages\\visitas\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C17CCB8A-0840-4370-B8EC-BBC470D11F42}|sisae.csproj|solutionrelative:pages\\visitas\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "EventLoggerService.cs",
+              "DocumentMoniker": "C:\\src\\unab\\sisae\\sisae\\Services\\EventLoggerService.cs",
+              "RelativeDocumentMoniker": "Services\\EventLoggerService.cs",
+              "ToolTip": "C:\\src\\unab\\sisae\\sisae\\Services\\EventLoggerService.cs",
+              "RelativeToolTip": "Services\\EventLoggerService.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAcwAYAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-22T20:31:56.095Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "C:\\src\\unab\\sisae\\sisae\\Pages\\Visitas\\Create.cshtml",
+              "RelativeDocumentMoniker": "Pages\\Visitas\\Create.cshtml",
+              "ToolTip": "C:\\src\\unab\\sisae\\sisae\\Pages\\Visitas\\Create.cshtml",
+              "RelativeToolTip": "Pages\\Visitas\\Create.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-12-22T20:27:08.831Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Create.cshtml.cs",
+              "DocumentMoniker": "C:\\src\\unab\\sisae\\sisae\\Pages\\Visitas\\Create.cshtml.cs",
+              "RelativeDocumentMoniker": "Pages\\Visitas\\Create.cshtml.cs",
+              "ToolTip": "C:\\src\\unab\\sisae\\sisae\\Pages\\Visitas\\Create.cshtml.cs",
+              "RelativeToolTip": "Pages\\Visitas\\Create.cshtml.cs",
+              "ViewState": "AgIAAJAAAAAAAAAAAAAmwJgAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-22T20:21:19.784Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

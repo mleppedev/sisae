@@ -34,29 +34,27 @@ namespace sisae.Pages.Visitas
         public List<SelectListItem> VisitadosSelectList { get; set; }
         public List<SelectListItem> VisitantesSelectList { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string rut = null)
+        public async Task<IActionResult> OnGetAsync(string rut = null, bool nuevo = false)
         {
-            // Si un RUT es proporcionado, intentar obtener el visitante
-            if (!string.IsNullOrEmpty(rut))
+            if (nuevo)
+            {
+                LimpiarVisita();
+            }
+            else if (!string.IsNullOrEmpty(rut))
             {
                 var visitante = await _context.Visitantes.FirstOrDefaultAsync(v => v.RUT == rut);
                 if (visitante == null)
                 {
-                    // Registrar el evento de visitante no encontrado y redirigir
                     await _eventLoggerService.LogEventAsync("VisitanteNoEncontrado", "Visitante no encontrado, redirigiendo a creación de visitante", User?.Identity?.Name);
                     return RedirectToPage("/Visitantes/Create", new { rut = rut });
                 }
                 else
                 {
-                    // Preseleccionar el visitante encontrado
                     Visita = new Visita { ID_Visitante = visitante.ID_Visitante };
                 }
             }
 
-            // Llenar las listas desplegables
             await LlenarListasDesplegablesAsync();
-
-            // Registrar el acceso a la página de creación de visitas
             await _eventLoggerService.LogEventAsync("AccesoCrearVisita", "Acceso a la página de creación de visitas", User?.Identity?.Name);
 
             return Page();
@@ -136,6 +134,7 @@ namespace sisae.Pages.Visitas
                 // Agregar un error al modelo
                 ModelState.AddModelError(string.Empty, "El visitante tiene acceso prohibido y no puede registrarse.");
                 await LlenarListasDesplegablesAsync();
+                LimpiarVisita(); // Limpiar los campos después de un acceso prohibido
                 return Page();
             }
 
@@ -149,9 +148,9 @@ namespace sisae.Pages.Visitas
                 ID_Visita = Visita.ID_Visita,
                 Fecha_Visita = Visita.Fecha_Visita.Add(Visita.Hora_Entrada),
                 Estado = Visita.Estado,
-                RUT = visitante?.RUT,
-                Nombre = visitante?.Nombre,
-                Apellido = visitante?.Apellido
+                RUT = visitante?.RUT ?? string.Empty,
+                Nombre = visitante?.Nombre ?? string.Empty,
+                Apellido = visitante?.Apellido ?? string.Empty
             };
             Console.WriteLine($"DTO generado: ID={dto.ID_Visita}, Fecha={dto.Fecha_Visita}, Estado={dto.Estado}, RUT={dto.RUT}, Nombre={dto.Nombre}, Apellido={dto.Apellido}");
 
@@ -212,6 +211,10 @@ namespace sisae.Pages.Visitas
                 Value = v.ID_Visitado.ToString(),
                 Text = $"{v.Apellido}, {v.Nombre} ({v.Cargo})"
             }).ToListAsync());
+        }
+        public void LimpiarVisita()
+        {
+            Visita = new Visita();
         }
     }
 }

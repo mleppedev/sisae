@@ -1,39 +1,40 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Localization; // Agregar esta línea
+using Microsoft.AspNetCore.Localization;
 using sisae.Data;
 using sisae.Services;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Agregar configuración desde el archivo secrets.json, opcional y se recarga si cambia
+// Agregar configuración desde el archivo secrets.json
 builder.Configuration.AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
 
-// Agregar servicios al contenedor.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+// Configurar DbContext con cadena de conexión de base de datos
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString)
-           .EnableSensitiveDataLogging()); // Esto muestra parámetros en los logs
+           .EnableSensitiveDataLogging()); // Muestra parámetros en los logs
 
 // Filtro para mostrar páginas de excepción para desarrolladores
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// Configurar ASP.NET Core Identity con confirmación de cuenta requerida
+// Configurar ASP.NET Core Identity
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Configurar ajustes de cookies de aplicación
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Identity/Account/Login"; // Ruta a la página de inicio de sesión
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied"; // Ruta para acceso denegado
+    options.LoginPath = "/Identity/Account/Login";
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
 });
 
 // Configurar el servicio de registro de eventos
 builder.Services.AddScoped<EventLoggerService>();
 
+// Configurar localización
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddControllersWithViews()
     .AddDataAnnotationsLocalization()
@@ -47,33 +48,31 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SupportedUICultures = supportedCultures;
 });
 
-// Configurar Razor Pages
+// Configurar Razor Pages con localización
 builder.Services.AddRazorPages()
-    .AddViewLocalization(); // Habilitar localización en vistas
+    .AddViewLocalization();
 
 // Configurar SignalR
 builder.Services.AddSignalR(options =>
 {
     options.EnableDetailedErrors = true;
-    options.MaximumReceiveMessageSize = 512 * 1024; // Permitir hasta 512 KB en el mensaje
+    options.MaximumReceiveMessageSize = 512 * 1024; // Hasta 512 KB en un mensaje
 });
 
-builder.Services.AddTransient<SignalRService>(provider => 
+// Configurar SignalRService con endpoint
+builder.Services.AddTransient<SignalRService>(provider =>
     new SignalRService("http://localhost:5278/dashboardHub"));
 
 // Configurar cliente HTTP para GoogleCloudVisionService
 builder.Services.AddHttpClient<GoogleCloudVisionService>();
 
-// Agregar EventLoggerService como servicio transitorio
-builder.Services.AddTransient<EventLoggerService>();
-
 var app = builder.Build();
 
-// Configurar soporte para español
+// Configurar soporte para localización (español e inglés)
 var supportedCultures = new[]
 {
     new CultureInfo("es"),
-    new CultureInfo("en") // Agregar inglés como respaldo
+    new CultureInfo("en")
 };
 app.UseRequestLocalization(new RequestLocalizationOptions
 {
@@ -85,24 +84,23 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 // Configurar el pipeline de solicitudes HTTP
 if (app.Environment.IsDevelopment())
 {
-    app.UseMigrationsEndPoint(); // Usar punto de finalización de migraciones en desarrollo
+    app.UseMigrationsEndPoint(); // Punto de finalización de migraciones en desarrollo
 }
 else
 {
-    app.UseExceptionHandler("/Error"); // Manejo de excepciones con una página de error
-    app.UseHsts(); // Seguridad con HSTS en producción
+    app.UseExceptionHandler("/Error"); // Manejo de excepciones
+    app.UseHsts(); // Uso de HSTS en producción
 }
 
 app.UseHttpsRedirection(); // Redirección a HTTPS
 app.UseStaticFiles(); // Servir archivos estáticos
 
-app.UseRouting(); // Habilitar el enrutamiento
+app.UseRouting(); // Habilitar enrutamiento
 
-app.UseAuthentication(); // Habilitar autenticación de usuarios
-app.UseAuthorization(); // Habilitar autorización de usuarios
+app.UseAuthentication(); // Habilitar autenticación
+app.UseAuthorization(); // Habilitar autorización
 
 app.MapRazorPages(); // Mapear las Razor Pages
-
-app.MapHub<DashboardHub>("/dashboardHub");
+app.MapHub<DashboardHub>("/dashboardHub"); // Mapear el hub para SignalR
 
 app.Run(); // Ejecutar la aplicación

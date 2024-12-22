@@ -1,27 +1,35 @@
 using sisae.Data;
 using sisae.Models;
+using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 public class EventLoggerService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IServiceProvider _serviceProvider;
 
-    public EventLoggerService(ApplicationDbContext context)
+    // Constructor que recibe IServiceProvider para crear instancias de ApplicationDbContext
+    public EventLoggerService(IServiceProvider serviceProvider)
     {
-        _context = context;
+        _serviceProvider = serviceProvider;
     }
 
+    // Método para registrar eventos de forma asíncrona
     public async Task LogEventAsync(string eventType, string description, string userId)
     {
-        var log = new EventLog
+        // Crear un nuevo alcance para obtener una nueva instancia de ApplicationDbContext
+        using (var scope = _serviceProvider.CreateScope())
         {
-            EventType = eventType,
-            Description = description,
-            UserId = userId
-        };
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var log = new EventLog
+            {
+                EventType = eventType,
+                Description = description,
+                UserId = userId
+            };
 
-        _context.EventLogs.Add(log);
-        await _context.SaveChangesAsync();
+            context.EventLogs.Add(log);
+            await context.SaveChangesAsync();
+        }
     }
-
 }
