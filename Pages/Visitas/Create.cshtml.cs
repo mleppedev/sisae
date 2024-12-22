@@ -8,6 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR.Client;
+using sisae.DTOs;
+using sisae.Services;
 
 namespace sisae.Pages.Visitas
 {
@@ -15,12 +18,14 @@ namespace sisae.Pages.Visitas
     {
         private readonly ApplicationDbContext _context;
         private readonly EventLoggerService _eventLoggerService;
+        private readonly SignalRService _signalRService;
 
         // Constructor que inyecta la base de datos y el servicio de registro de eventos
-        public CreateModel(ApplicationDbContext context, EventLoggerService eventLoggerService)
+        public CreateModel(ApplicationDbContext context, EventLoggerService eventLoggerService, SignalRService signalRService)
         {
             _context = context;
             _eventLoggerService = eventLoggerService;
+            _signalRService = signalRService;
         }
 
         [BindProperty]
@@ -93,7 +98,31 @@ namespace sisae.Pages.Visitas
             _context.Visitas.Add(Visita);
             await _context.SaveChangesAsync();
 
-            // Registrar el evento después de guardar la visita
+            // Crear el DTO
+            var dto = new VisitaDto
+            {
+                ID_Visita = Visita.ID_Visita,
+                Fecha_Visita = Visita.Fecha_Visita.Add(Visita.Hora_Entrada),
+                Estado = Visita.Estado,
+                RUT = visitante?.RUT,
+                Nombre = visitante?.Nombre,
+                Apellido = visitante?.Apellido
+            };
+            Console.WriteLine($"DTO generado: ID={dto.ID_Visita}, Fecha={dto.Fecha_Visita}, Estado={dto.Estado}, RUT={dto.RUT}, Nombre={dto.Nombre}, Apellido={dto.Apellido}");
+
+            // Invocar el método del servicio SignalR
+            try
+            {
+                await _signalRService.SendVisitaUpdateAsync(dto);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al invocar SignalRService: {ex.Message}");
+                // O loggear el error
+                throw;
+            }
+
+            // Registrar el evento de creación de visita
             await _eventLoggerService.LogEventAsync("CrearVisita", $"Visita creada con ID {Visita.ID_Visita}", User?.Identity?.Name);
 
             return RedirectToPage("./Index");

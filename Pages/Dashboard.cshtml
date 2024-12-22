@@ -1,0 +1,113 @@
+@page
+@model DashboardModel
+@{
+    ViewData["Title"] = "Dashboard de Ingresos en Tiempo Real";
+}
+
+<h1 class="text-center">Dashboard de Ingresos en Tiempo Real</h1>
+
+<!-- Canvas para el gráfico -->
+<canvas id="realtimeChart" width="400" height="200"></canvas>
+
+<!-- Tabla para mostrar la información adicional -->
+<table id="visitasTable" class="table">
+    <thead>
+        <tr>
+            <th>Fecha y Hora</th>
+            <th>Estado</th>
+            <th>RUT</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@section Scripts {
+    <!-- Incluir scripts necesarios -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('realtimeChart').getContext('2d');
+
+            // Inicialización del gráfico
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [], // Etiquetas de tiempo
+                    datasets: [{
+                        label: 'Visitas',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgb(75, 192, 192)',
+                        borderWidth: 1,
+                        data: [] // Los datos se actualizarán aquí
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'category', // Escala categórica para las fechas
+                            title: {
+                                display: true,
+                                text: 'Fecha y Hora'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Cantidad de Visitas'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Conexión a SignalR
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("http://localhost:5278/dashboardHub", { transport: signalR.HttpTransportType.WebSockets })
+                .build();
+
+            // Manejador de mensajes recibidos
+            connection.on("ReceiveVisita", (message) => {
+                const newData = JSON.parse(message);
+                console.log("Mensaje recibido:", newData);
+
+                // Actualizar el gráfico
+                chart.data.labels.push(newData.fecha); // Añadir fecha al eje X
+                chart.data.datasets[0].data.push(chart.data.datasets[0].data.length + 1); // Contador de visitas
+                
+                // Limitar a 10 puntos para evitar desbordamiento
+                if (chart.data.labels.length > 10) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                }
+
+                chart.update(); // Actualizar el gráfico
+
+                // Actualizar la tabla
+                const tableBody = document.querySelector("#visitasTable tbody");
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${newData.fecha}</td>
+                    <td>${newData.estado}</td>
+                    <td>${newData.rut}</td>
+                    <td>${newData.nombre}</td>
+                    <td>${newData.apellido}</td>
+                `;
+                tableBody.appendChild(row);
+
+                // Limitar las filas de la tabla a 10
+                if (tableBody.rows.length > 10) {
+                    tableBody.deleteRow(0);
+                }
+            });
+
+            connection.start()
+                .then(() => console.log("Conexión a SignalR establecida"))
+                .catch(err => console.error("Error en SignalR:", err.toString()));
+        });
+    </script>
+}
