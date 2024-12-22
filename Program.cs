@@ -17,6 +17,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient<GoogleCloudVisionService>();
+builder.Services.AddTransient<EventLoggerService>();
 
 var app = builder.Build();
 

@@ -18,5 +18,7 @@ namespace sisae.Data
         public DbSet<Visitante> Visitantes { get; set; }
 
         public DbSet<Visita> Visitas { get; set; }
+
+        public DbSet<EventLog> EventLogs { get; set; }
     }
 }
