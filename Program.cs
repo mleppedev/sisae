@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Localization; // Agregar esta línea
 using sisae.Data;
-using static sisae.Pages.Visitantes.CreateModel;
 using sisae.Services;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,16 +34,28 @@ builder.Services.ConfigureApplicationCookie(options =>
 // Configurar el servicio de registro de eventos
 builder.Services.AddScoped<EventLoggerService>();
 
-// Agregar soporte para Razor Pages
-builder.Services.AddRazorPages();
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddControllersWithViews()
+    .AddDataAnnotationsLocalization()
+    .AddViewLocalization();
 
-// Agregar soporte para Hubs
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[] { new CultureInfo("es"), new CultureInfo("en") };
+    options.DefaultRequestCulture = new RequestCulture("es");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
+
+// Configurar Razor Pages
+builder.Services.AddRazorPages()
+    .AddViewLocalization(); // Habilitar localización en vistas
+
+// Configurar SignalR
 builder.Services.AddSignalR(options =>
 {
     options.EnableDetailedErrors = true;
-
-    // Permitir hasta 512 KB en el mensaje
-    options.MaximumReceiveMessageSize = 512 * 1024; 
+    options.MaximumReceiveMessageSize = 512 * 1024; // Permitir hasta 512 KB en el mensaje
 });
 
 builder.Services.AddTransient<SignalRService>(provider => 
@@ -55,6 +68,19 @@ builder.Services.AddHttpClient<GoogleCloudVisionService>();
 builder.Services.AddTransient<EventLoggerService>();
 
 var app = builder.Build();
+
+// Configurar soporte para español
+var supportedCultures = new[]
+{
+    new CultureInfo("es"),
+    new CultureInfo("en") // Agregar inglés como respaldo
+};
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("es"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+});
 
 // Configurar el pipeline de solicitudes HTTP
 if (app.Environment.IsDevelopment())

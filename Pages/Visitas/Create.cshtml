@@ -7,7 +7,13 @@
 <h1 class="text-center">Registrar Visita</h1>
 
 <div class="container mt-5">
-    <form method="post" class="row g-3">
+    <!-- Mostrar alertas solo si hay errores -->
+    @if (ModelState.ErrorCount > 0)
+    {
+        <div asp-validation-summary="All" class="alert alert-danger text-center" role="alert"></div>
+    }
+
+    <form id="visitaForm" method="post" class="row g-3">
         <div class="col-md-6">
             <!-- Campo para ingresar el RUT del visitante -->
             <div class="form-group">
@@ -83,12 +89,31 @@
         <!-- Botones para registrar o cancelar -->
         <div class="col-12 text-center mt-5">
             <button type="submit" class="btn btn-primary">Registrar Visita</button>
+            <button type="button" id="nuevoRegistro" class="btn btn-warning ms-2">Nuevo</button>
             <a asp-page="./Index" class="btn btn-secondary ms-2">Cancelar</a>
         </div>
     </form>
 </div>
 
 @section Scripts {
+    <script>
+        document.getElementById('nuevoRegistro').addEventListener('click', function () {
+            const form = document.getElementById('visitaForm');
+            form.reset(); // Reinicia los valores del formulario
+
+            // Reiniciar los selects a "Seleccione..."
+            document.querySelector('select[name="Visita.ID_Visitante"]').value = "";
+            document.querySelector('select[name="Visita.ID_Visitado"]').value = "";
+            document.querySelector('select[name="Visita.Motivo_Visita"]').value = "";
+            document.querySelector('select[name="Visita.Comentarios"]').value = "";
+            //document.querySelector('select[name="Visita.Estado"]').value = "";
+
+            // Limpiar mensajes de validación
+            document.querySelectorAll('.text-danger').forEach(span => span.innerText = "");
+            document.getElementById('rutMessage').innerText = "";
+        });
+    </script>
+
     <script>
         document.getElementById('checkRut').addEventListener('click', async function () {
             const rutInputElement = document.getElementById('rutInput');
@@ -154,14 +179,25 @@
         }
 
         function formatearRut(rut) {
-            let cuerpo = rut.slice(0, -1);
-            let dv = rut.slice(-1);
-
-            // Agrega puntos cada tres dígitos desde el final del cuerpo del RUT
-            cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-            
-            // Retornar cuerpo formateado con el dígito verificador (dv)
-            return `${cuerpo}-${dv}`;
+            // Verificar si el RUT ya contiene un guion
+            if (rut.includes("-")) {
+                // Separar el cuerpo y el dígito verificador si ya tiene el guion
+                let [cuerpo, dv] = rut.split("-");
+                
+                // Formatear el cuerpo agregando puntos
+                cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                
+                return `${cuerpo}-${dv}`;
+            } else {
+                // Si no tiene guion, separarlo normalmente
+                let cuerpo = rut.slice(0, -1);
+                let dv = rut.slice(-1);
+                
+                // Formatear el cuerpo agregando puntos
+                cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                
+                return `${cuerpo}-${dv}`;
+            }
         }
     </script>
 }

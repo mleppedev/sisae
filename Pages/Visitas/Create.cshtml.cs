@@ -68,6 +68,12 @@ namespace sisae.Pages.Visitas
             ModelState.Remove("Visita.Visitado");
             ModelState.Remove("Visita.Visitante");
 
+            // Estado por defecto
+            if (string.IsNullOrWhiteSpace(Visita.Estado))
+            {
+                Visita.Estado = "Activa";
+            }
+
             if (!ModelState.IsValid)
             {
                 // Volver a cargar las listas en caso de error de validación
@@ -91,6 +97,26 @@ namespace sisae.Pages.Visitas
                 // Registrar error de visitante no encontrado
                 await _eventLoggerService.LogEventAsync("VisitanteNoEncontrado", "El visitante seleccionado no existe", User?.Identity?.Name);
 
+                return Page();
+            }
+
+            // Verificar si el visitante está en los accesos prohibidos
+            var accesoProhibido = await _context.AccesosProhibidos
+                .FirstOrDefaultAsync(a => a.ID_Visitante == Visita.ID_Visitante &&
+                                        (a.Fecha_Expiracion == null || a.Fecha_Expiracion > DateTime.Now));
+            if (accesoProhibido != null)
+            {
+                // Registrar en consola y log
+                Console.WriteLine($"El visitante con ID {Visita.ID_Visitante} está prohibido.");
+                await _eventLoggerService.LogEventAsync(
+                    "AccesoProhibidoDetectado",
+                    $"Intento de registrar una visita para un visitante con acceso prohibido. ID Visitante: {Visita.ID_Visitante}, Motivo: {accesoProhibido.Motivo}",
+                    User?.Identity?.Name
+                );
+
+                // Agregar un error al modelo
+                ModelState.AddModelError(string.Empty, "El visitante tiene acceso prohibido y no puede registrarse.");
+                await LlenarListasDesplegablesAsync();
                 return Page();
             }
 
@@ -147,31 +173,26 @@ namespace sisae.Pages.Visitas
         private async Task LlenarListasDesplegablesAsync()
         {
             // Generar lista de Visitantes
-            VisitantesSelectList = await _context.Visitantes.Select(v => new SelectListItem
+            VisitantesSelectList = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "", Text = "Seleccione..." } // Opción predeterminada
+            };
+            VisitantesSelectList.AddRange(await _context.Visitantes.Select(v => new SelectListItem
             {
                 Value = v.ID_Visitante.ToString(),
                 Text = $"{v.Apellido}, {v.Nombre} ({v.RUT})"
-            }).ToListAsync();
+            }).ToListAsync());
 
-            // Generar lista de Visitados con formato "Apellido, Nombre (Cargo)"
-            VisitadosSelectList = await _context.Visitados.Select(v => new SelectListItem
+            // Generar lista de Visitados
+            VisitadosSelectList = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "", Text = "Seleccione..." } // Opción predeterminada
+            };
+            VisitadosSelectList.AddRange(await _context.Visitados.Select(v => new SelectListItem
             {
                 Value = v.ID_Visitado.ToString(),
                 Text = $"{v.Apellido}, {v.Nombre} ({v.Cargo})"
-            }).ToListAsync();
-
-            // Si un visitante ya está preseleccionado, asegúrate de reflejar esto en la lista desplegable
-            if (Visita?.ID_Visitante != null)
-            {
-                foreach (var item in VisitantesSelectList)
-                {
-                    if (item.Value == Visita.ID_Visitante.ToString())
-                    {
-                        item.Selected = true;
-                        break;
-                    }
-                }
-            }
+            }).ToListAsync());
         }
     }
 }

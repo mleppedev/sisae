@@ -6,22 +6,92 @@
 
 <h1 class="text-center">Dashboard de Ingresos en Tiempo Real</h1>
 
-<!-- Canvas para el gráfico -->
-<canvas id="realtimeChart" width="400" height="200"></canvas>
+<!-- Contenedor principal para el diseño -->
+<div class="dashboard-container">
+    <!-- Canvas para el gráfico -->
+    <div class="chart-container">
+        <canvas id="realtimeChart" width="400" height="200"></canvas>
+    </div>
 
-<!-- Tabla para mostrar la información adicional -->
-<table id="visitasTable" class="table">
-    <thead>
-        <tr>
-            <th>Fecha y Hora</th>
-            <th>Estado</th>
-            <th>RUT</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+    <!-- Tabla para mostrar la información adicional -->
+    <div class="table-container">
+        <table id="visitasTable" class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Fecha y Hora</th>
+                    <th>Estado</th>
+                    <th>RUT</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        body {
+            margin: 0; /* Quita los márgenes globales del cuerpo */
+            padding: 0;
+        }
+
+        .dashboard-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin: 20px 0; /* Solo margen superior e inferior */
+        }
+
+        .chart-container {
+            flex: 1; /* 1/3 del ancho */
+        }
+
+        .table-container {
+            flex: 2; /* 2/3 del ancho */
+            max-height: 600px; /* Limita la altura de la tabla para evitar desbordamiento */
+            overflow-y: auto; /* Añade scroll si es necesario */
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th, .table td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .table thead {
+            background-color: #343a40;
+            color: white;
+            font-weight: bold;
+        }
+
+        .table tbody tr:nth-child(odd) {
+            background-color: #f2f2f2; /* Gris claro para filas impares */
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #ffffff; /* Blanco para filas pares */
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f1f1; /* Color de fondo al pasar el ratón */
+        }
+
+        .table th {
+            text-align: center;
+        }
+
+        .table td {
+            text-align: center;
+        }
+    </style>
+}
 
 @section Scripts {
     <!-- Incluir scripts necesarios -->
