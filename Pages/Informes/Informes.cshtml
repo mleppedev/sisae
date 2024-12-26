@@ -1,11 +1,13 @@
 ﻿@page
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Administrador,Encargado")]
 @model sisae.Pages.Informes.InformesModel
 @{
     ViewData["Title"] = "Generar Informes";
 }
 
 <div class="container mt-5">
-    <h2>Generar Informes con Lenguaje Natural</h2>
+    <h2 class="text-center">Generar Informes con Lenguaje Natural</h2>
     <p>Escribe tu consulta para obtener informes detallados sobre las visitas.</p>
 
     <form method="post" id="queryForm">

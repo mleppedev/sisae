@@ -1,10 +1,12 @@
 ﻿@page "{id:int}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Administrador,Encargado")]
 @model sisae.Pages.AccesosProhibidos.DeleteModel
 @{
     ViewData["Title"] = "Eliminar Acceso Prohibido";
 }
 
-<h2>Eliminar Acceso Prohibido</h2>
+<h2 class="text-center">Eliminar Acceso Prohibido</h2>
 
 <h3>¿Estás seguro que deseas eliminar este acceso prohibido?</h3>
 

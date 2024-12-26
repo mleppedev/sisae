@@ -1,4 +1,6 @@
 ﻿@page "{id:int}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Administrador,Encargado")]
 @model sisae.Pages.Visitados.EditModel
 @{
     ViewData["Title"] = "Editar Visitado";

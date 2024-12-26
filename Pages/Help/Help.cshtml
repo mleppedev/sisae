@@ -5,7 +5,7 @@
 }
 
 <div class="container mt-5">
-    <h2>Solicitar Ayuda</h2>
+    <h2 class="text-center">Solicitar Ayuda</h2>
     <p>¿Tienes alguna duda o necesitas asistencia? Escribe tu consulta y nuestro asistente virtual te ayudará.</p>
 
     <form method="post">
@@ -20,7 +20,66 @@
     {
         <div class="mt-4">
             <h4>Respuesta:</h4>
-            <p>@Model.Respuesta</p>
+            <textarea class="form-control" id="sqlQuery" readonly rows="5" style="resize: both;">@Model.Respuesta</textarea>
         </div>
     }
+
+    <h3 style="margin-top: 20px;">Información del Proyecto Sisae</h3>
+
+    <h4>Introducción</h4>
+    <p>Esta página proporciona información sobre el proyecto Sisae, incluyendo su arquitectura, tecnologías utilizadas, servicios implementados, y cómo configurar el entorno de desarrollo.</p>
+
+    <h4>Tecnologías Usadas</h4>
+    <h5>Tecnologías Principales</h5>
+    <ul>
+        <li><strong>.NET</strong>: Framework principal para el desarrollo de la aplicación.</li>
+        <li><strong>Node.js</strong>: Utilizado para gestionar dependencias de JavaScript.</li>
+        <li><strong>SignalR</strong>: Para comunicación en tiempo real.</li>
+    </ul>
+
+    <h5>Razones de Elección</h5>
+    <ul>
+        <li><strong>.NET</strong>: Ofrece un entorno robusto y escalable para aplicaciones web.</li>
+        <li><strong>Node.js</strong>: Facilita la gestión de paquetes y librerías de frontend.</li>
+        <li><strong>SignalR</strong>: Proporciona una solución eficiente para actualizaciones en tiempo real.</li>
+    </ul>
+
+    <h4>Servicios</h4>
+    <h5>Descripción de Servicios</h5>
+    <ul>
+        <li><strong>ApplicationDbContext</strong>: Proporciona acceso a las entidades de la base de datos, incluyendo `AccesosProhibidos`, `Visitados`, `Visitantes`, `Visitas` y `EventLogs`.</li>
+        <li><strong>EventLoggerService</strong>: Servicio para registrar eventos importantes en el sistema.</li>
+    </ul>
+
+    <h5>Interacción</h5>
+    <p>Los servicios interactúan con el contexto de la base de datos para realizar operaciones CRUD sobre las entidades y utilizan `IdentityDbContext` para gestionar la autenticación y autorización de usuarios.</p>
+
+    <h4>Migraciones</h4>
+    <h5>Detalles de Migraciones</h5>
+    <p>Las migraciones se utilizan para actualizar el esquema de la base de datos de manera controlada, incluyendo cambios en las tablas `AccesosProhibidos`, `Visitados`, `Visitantes`, y `Visitas`.</p>
+
+    <h5>Aplicación de Migraciones</h5>
+    <p>Utilizar el comando <code>Update-Database</code> en la consola de administración de paquetes para aplicar las migraciones. Asegurarse de que la cadena de conexión esté correctamente configurada en <code>appsettings.json</code>.</p>
+
+    <h4>Librerías</h4>
+    <h5>Lista de Librerías</h5>
+    <ul>
+        <li><strong>chart.js</strong>: Utilizado para crear gráficos interactivos en la aplicación.</li>
+        <li><strong>EntityFrameworkCore</strong>: Utilizado para interactuar con la base de datos de manera eficiente.</li>
+        <li><strong>SignalR</strong>: Para comunicación en tiempo real entre el servidor y los clientes.</li>
+    </ul>
+
+    <h4>Instrucciones de Uso del Sistema</h4>
+    <h5>Para Administradores y Encargados</h5>
+    <ol>
+        <li><strong>Iniciar Sesión:</strong> Utiliza tus credenciales para acceder al sistema. Asegúrate de que tu cuenta tenga los roles adecuados (Administrador o Encargado).</li>
+        <li><strong>Gestión de Visitantes:</strong> Puedes crear, editar y eliminar registros de visitantes. Asegúrate de ingresar toda la información requerida.</li>
+        <li><strong>Registro de Visitas:</strong> Al registrar una visita, selecciona el visitante y el visitado correspondiente. Proporciona la fecha y el motivo de la visita.</li>
+        <li><strong>Control de Accesos:</strong> Puedes gestionar accesos prohibidos, incluyendo la creación de nuevas restricciones y la edición de las existentes.</li>
+        <li><strong>Generación de Informes:</strong> Utiliza la opción de generar informes para obtener datos sobre visitas y accesos. Asegúrate de seleccionar los filtros adecuados.</li>
+        <li><strong>Soporte:</strong> Si encuentras problemas o tienes dudas, utiliza la sección de ayuda para enviar tus consultas.</li>
+    </ol>
+
+    <h4>Conclusión</h4>
+    <p>Esta página de ayuda proporciona una visión general completa del proyecto Sisae, sus tecnologías, servicios, y cómo interactúan entre sí. Para más información, consulta la documentación específica de cada sección.</p>
 </div>

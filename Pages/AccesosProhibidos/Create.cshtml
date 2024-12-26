@@ -1,10 +1,12 @@
 ﻿@page
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Administrador,Encargado")]
 @model sisae.Pages.AccesosProhibidos.CreateModel
 @{
     ViewData["Title"] = "Crear Acceso Prohibido";
 }
 
-<h2>Crear Acceso Prohibido</h2>
+<h2 class="text-center">Crear Acceso Prohibido</h2>
 
 <form method="post">
     <div class="row">

@@ -20,9 +20,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Filtro para mostrar páginas de excepción para desarrolladores
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// Configurar ASP.NET Core Identity
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+// Configurar ASP.NET Core Identity con roles
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 // Configurar ajustes de cookies de aplicación
 builder.Services.ConfigureApplicationCookie(options =>
@@ -102,5 +103,12 @@ app.UseAuthorization(); // Habilitar autorización
 
 app.MapRazorPages(); // Mapear las Razor Pages
 app.MapHub<DashboardHub>("/dashboardHub"); // Mapear el hub para SignalR
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    await SeedData.Initialize(scope.ServiceProvider, userManager);
+}
 
 app.Run(); // Ejecutar la aplicación

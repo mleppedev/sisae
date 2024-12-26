@@ -1,10 +1,12 @@
 ﻿@page
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Administrador,Encargado")]
 @model sisae.Pages.Visitados.CreateModel
 @{
     ViewData["Title"] = "Crear Visitado";
 }
 
-<h2>Crear Visitado</h2>
+<h2 class="text-center">Crear Visitado</h2>
 
 <form method="post">
     <div class="form-group">

@@ -78,7 +78,7 @@ namespace sisae.Pages.Help
             }
         }
 
-        // M�todo para leer el archivo FAQ
+        // Método para leer el archivo FAQ
         private async Task<string> LeerFAQJson()
         {
             string filePath = Path.Combine(_env.WebRootPath, "Data", "faq.json");

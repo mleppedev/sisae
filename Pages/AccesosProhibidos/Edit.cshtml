@@ -1,10 +1,12 @@
 ﻿@page "{id:int}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Administrador,Encargado")]
 @model sisae.Pages.AccesosProhibidos.EditModel
 @{
     ViewData["Title"] = "Editar Acceso Prohibido";
 }
 
-<h2>Editar Acceso Prohibido</h2>
+<h2 class="text-center">Editar Acceso Prohibido</h2>
 
 <form method="post">
     <input type="hidden" asp-for="AccesoProhibido.ID_Acceso_Prohibido" />

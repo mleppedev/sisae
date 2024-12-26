@@ -22,3 +22,28 @@
 
 ### Eliminado
 - Restricciones de ancho máximo en el contenedor del dashboard.
+
+## [1.0.1] - 2024-12-26
+
+### Modificado
+- Mejora de la página de perfil con diseño responsivo, tooltips y mensajes de retroalimentación para una mejor experiencia de usuario.
+- Validación en tiempo real para el número de teléfono en el formulario de perfil.
+- Mensajes de confirmación al guardar cambios en el perfil.
+- Ajustes en el diseño de la página de creación de visitas para una mejor visualización de los datos.
+- Ajustes en el diseño de la página de creación de visitados para una mejor visualización de los datos.
+- Ajustes en el diseño de la página de creación de accesos prohibidos para una mejor visualización de los datos.
+- Ajustes en el diseño de la página de edición de visitas para una mejor visualización de los datos.
+- Ajustes en el diseño de la página de edición de visitados para una mejor visualización de los datos.
+- Ajustes en el diseño de la página de edición de accesos prohibidos para una mejor visualización de los datos.
+- Mejora del campo de respuesta en la página de ayuda para incluir un filtro de búsqueda.
+- Las respuestas ahora se muestran en una tabla, mejorando la legibilidad y organización de la información.
+- Se implementó un script para filtrar las respuestas en tiempo real, similar a la funcionalidad de la página de informes.
+
+### Mejorado
+- Mejora de la página de perfil con diseño responsivo, tooltips y mensajes de retroalimentación para una mejor experiencia de usuario.
+- Validación en tiempo real para el número de teléfono en el formulario de perfil.
+- Mensajes de confirmación al guardar cambios en el perfil.
+
+### Corregido
+- Solución al error 404 en la página de ayuda al enviar consultas.
+- Implementación de la devolución de respuestas en el método `OnPostAsync` para asegurar que las respuestas se muestren correctamente al usuario.

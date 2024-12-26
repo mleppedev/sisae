@@ -1,4 +1,6 @@
 ﻿@page
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Administrador,Encargado")]
 @model sisae.Pages.AccesosProhibidos.IndexModel
 @{
     ViewData["Title"] = "Accesos Prohibidos";

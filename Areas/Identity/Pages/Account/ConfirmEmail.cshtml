@@ -1,8 +1,10 @@
 ﻿@page
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Administrador, Encargado")]
 @model ConfirmEmailModel
 @{
     ViewData["Title"] = "Confirm email";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1 class="text-center">@ViewData["Title"]</h1>
 <partial name="_StatusMessage" model="Model.StatusMessage" />

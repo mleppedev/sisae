@@ -1,4 +1,6 @@
 ﻿@page
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Administrador,Encargado")]
 @model sisae.Pages.Visitantes.CreateModel
 
 @section Scripts {
@@ -175,7 +177,7 @@
     </script>
 }
 
-<h2>Registrar Visitante</h2>
+<h2 class="text-center">Registrar Visitante</h2>
 
 <form method="post" class="mt-4">
     <!-- Primera fila con RUT, Nombre, y Apellido -->
