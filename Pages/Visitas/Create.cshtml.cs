@@ -185,7 +185,7 @@ namespace sisae.Pages.Visitas
                 return NotFound();
             }
 
-            return new JsonResult(new { idVisitante = visitante.ID_Visitante });
+            return new JsonResult(new { idVisitante = visitante.ID_Visitante, nombreVisitante = $"{visitante.Apellido}, {visitante.Nombre}" });
         }
 
         private async Task LlenarListasDesplegablesAsync()
@@ -195,22 +195,28 @@ namespace sisae.Pages.Visitas
             {
                 new SelectListItem { Value = "", Text = "Seleccione..." } // Opción predeterminada
             };
-            VisitantesSelectList.AddRange(await _context.Visitantes.Select(v => new SelectListItem
-            {
-                Value = v.ID_Visitante.ToString(),
-                Text = $"{v.Apellido}, {v.Nombre} ({v.RUT})"
-            }).ToListAsync());
+            VisitantesSelectList.AddRange(await _context.Visitantes
+                .OrderBy(v => v.Apellido)
+                .ThenBy(v => v.Nombre)
+                .Select(v => new SelectListItem
+                {
+                    Value = v.ID_Visitante.ToString(),
+                    Text = $"{v.Apellido}, {v.Nombre} ({v.RUT})"
+                }).ToListAsync());
 
             // Generar lista de Visitados
             VisitadosSelectList = new List<SelectListItem>
             {
                 new SelectListItem { Value = "", Text = "Seleccione..." } // Opción predeterminada
             };
-            VisitadosSelectList.AddRange(await _context.Visitados.Select(v => new SelectListItem
-            {
-                Value = v.ID_Visitado.ToString(),
-                Text = $"{v.Apellido}, {v.Nombre} ({v.Cargo})"
-            }).ToListAsync());
+            VisitadosSelectList.AddRange(await _context.Visitados
+                .OrderBy(v => v.Apellido)
+                .ThenBy(v => v.Nombre)
+                .Select(v => new SelectListItem
+                {
+                    Value = v.ID_Visitado.ToString(),
+                    Text = $"{v.Apellido}, {v.Nombre} ({v.Cargo})"
+                }).ToListAsync());
         }
         public void LimpiarVisita()
         {

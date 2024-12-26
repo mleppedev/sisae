@@ -5,7 +5,10 @@
 }
 
 <h1 class="text-center">Dashboard de Ingresos en Tiempo Real</h1>
-
+<!-- Botón para limpiar el dashboard -->
+<div style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
+    <span id="clearDashboard" style="cursor: pointer; color: #dc3545; font-size: 18px; text-decoration: underline;">Limpiar Dashboard</span>
+</div>
 <!-- Contenedor principal para el diseño -->
 <div class="dashboard-container">
     <!-- Canvas para el gráfico -->
@@ -15,6 +18,7 @@
 
     <!-- Tabla para mostrar la información adicional -->
     <div class="table-container">
+        <button id="exportVisitas" class="btn btn-primary" style="margin-bottom: 10px;">Exportar Visitas a CSV</button>
         <table id="visitasTable" class="table table-bordered">
             <thead class="thead-dark">
                 <tr>
@@ -28,8 +32,8 @@
             <tbody></tbody>
         </table>
 
-        <!-- Tabla de intentos prohibidos -->
-        <table id="prohibidosTable" class="table table-bordered mt-3">
+        <button id="exportProhibidos" class="btn btn-primary" style="margin-bottom: 10px;">Exportar Prohibidos a CSV</button>
+        <table id="prohibidosTable" class="table table-bordered">
             <thead class="thead-dark">
                 <tr>
                     <th>Fecha y Hora</th>
@@ -44,89 +48,26 @@
     </div>
 </div>
 
-@section Styles {
-    <style>
-        body {
-            margin: 0; /* Quita los márgenes globales del cuerpo */
-            padding: 0;
-        }
-
-        .dashboard-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 20px;
-            margin: 20px 0; /* Solo margen superior e inferior */
-        }
-
-        .chart-container {
-            flex: 1; /* 1/3 del ancho */
-        }
-
-        .table-container {
-            flex: 2; /* 2/3 del ancho */
-            max-height: 600px; /* Limita la altura de la tabla para evitar desbordamiento */
-            overflow-y: auto; /* Añade scroll si es necesario */
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .table th, .table td {
-            padding: 10px;
-            text-align: left;
-        }
-
-        .table thead {
-            background-color: #343a40;
-            color: white;
-            font-weight: bold;
-        }
-
-        .table tbody tr:nth-child(odd) {
-            background-color: #f2f2f2; /* Gris claro para filas impares */
-        }
-
-        .table tbody tr:nth-child(even) {
-            background-color: #ffffff; /* Blanco para filas pares */
-        }
-
-        .table tbody tr:hover {
-            background-color: #f1f1f1; /* Color de fondo al pasar el ratón */
-        }
-
-        .table th {
-            text-align: center;
-        }
-
-        .table td {
-            text-align: center;
-        }
-    </style>
-}
+<link rel="stylesheet" href="~/css/dashboard.css" />
 
 @section Scripts {
     <!-- Incluir scripts necesarios -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Configuración del contexto del gráfico de Chart.js
             const ctx = document.getElementById('realtimeChart').getContext('2d');
-
-            // Inicialización del gráfico de líneas
             const chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: [], // Etiquetas en el eje X (vacío inicialmente)
+                    labels: JSON.parse(localStorage.getItem('chartLabels')) || [],
                     datasets: [{
                         label: 'Visitas',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         borderColor: 'rgb(75, 192, 192)',
                         borderWidth: 1,
-                        data: [] // Datos iniciales vacíos
+                        data: JSON.parse(localStorage.getItem('chartData')) || []
                     }]
                 },
                 options: {
@@ -135,48 +76,61 @@
                         x: {
                             title: {
                                 display: true,
-                                text: 'Fecha y Hora' // Título del eje X
+                                text: 'Fecha y Hora'
                             }
                         },
                         y: {
                             title: {
                                 display: true,
-                                text: 'Cantidad de Visitas' // Título del eje Y
+                                text: 'Cantidad de Visitas'
                             },
                             beginAtZero: true
+                        }
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const elementIndex = elements[0].index;
+                            const label = chart.data.labels[elementIndex];
+                            const value = chart.data.datasets[0].data[elementIndex];
+                            alert(`Fecha: ${label}\nCantidad de Visitas: ${value}`);
                         }
                     }
                 }
             });
 
-            // Configuración de la conexión SignalR
             const connection = new signalR.HubConnectionBuilder()
                 .withUrl("http://localhost:5278/dashboardHub")
                 .configureLogging(signalR.LogLevel.Information)
                 .build();
 
-            // Iniciar la conexión con SignalR
             connection.start()
-                .then(() => console.log("Conexión a SignalR establecida"))
-                .catch(err => console.error("Error en SignalR:", err.toString()));
+                .then(() => {
+                    console.log("Conexión a SignalR establecida");
+                    document.getElementById('statusIndicator').textContent = 'Conectado';
+                    document.getElementById('statusIndicator').classList.remove('disconnected');
+                })
+                .catch(err => {
+                    console.error("Error en SignalR:", err.toString());
+                    document.getElementById('statusIndicator').textContent = 'Desconectado';
+                    document.getElementById('statusIndicator').classList.add('disconnected');
+                });
 
-            // Manejador para la recepción de visitas permitidas
             connection.on("ReceiveVisita", (message) => {
                 const newData = JSON.parse(message);
 
-                // Actualizar el gráfico con nuevos datos
-                chart.data.labels.push(newData.fecha); // Añadir la fecha al eje X
-                chart.data.datasets[0].data.push(chart.data.datasets[0].data.length + 1); // Contador de visitas
+                chart.data.labels.push(newData.fecha);
+                chart.data.datasets[0].data.push(chart.data.datasets[0].data.length + 1);
 
-                // Limitar a 10 puntos para evitar desbordamiento en el gráfico
                 if (chart.data.labels.length > 10) {
                     chart.data.labels.shift();
                     chart.data.datasets[0].data.shift();
                 }
 
-                chart.update(); // Actualizar el gráfico
+                chart.update();
 
-                // Actualizar la tabla de visitas permitidas
+                localStorage.setItem('chartLabels', JSON.stringify(chart.data.labels));
+                localStorage.setItem('chartData', JSON.stringify(chart.data.datasets[0].data));
+
                 const tableBody = document.querySelector("#visitasTable tbody");
                 const row = document.createElement("tr");
                 row.innerHTML = `
@@ -188,17 +142,34 @@
                 `;
                 tableBody.appendChild(row);
 
-                // Limitar las filas de la tabla a 10
                 if (tableBody.rows.length > 10) {
                     tableBody.deleteRow(0);
                 }
+
+                const visitasData = JSON.parse(localStorage.getItem('visitasData')) || [];
+                visitasData.push(newData);
+                if (visitasData.length > 10) {
+                    visitasData.shift();
+                }
+                localStorage.setItem('visitasData', JSON.stringify(visitasData));
             });
 
-            // Manejador para la recepción de intentos de acceso prohibidos
+            const visitasData = JSON.parse(localStorage.getItem('visitasData')) || [];
+            const tableBody = document.querySelector("#visitasTable tbody");
+            visitasData.forEach(data => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${data.fecha}</td>
+                    <td>${data.estado}</td>
+                    <td>${data.rut}</td>
+                    <td>${data.nombre}</td>
+                    <td>${data.apellido}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
             connection.on("ReceiveAccesoProhibido", (message) => {
                 const newData = JSON.parse(message);
-
-                // Actualizar la tabla de intentos prohibidos
                 const prohibitedBody = document.querySelector("#prohibidosTable tbody");
                 const row = document.createElement("tr");
                 row.innerHTML = `
@@ -210,11 +181,116 @@
                 `;
                 prohibitedBody.appendChild(row);
 
-                // Limitar las filas de la tabla a 10
                 if (prohibitedBody.rows.length > 10) {
                     prohibitedBody.deleteRow(0);
                 }
+
+                const prohibidosData = JSON.parse(localStorage.getItem('prohibidosData')) || [];
+                prohibidosData.push(newData);
+                if (prohibidosData.length > 10) {
+                    prohibidosData.shift();
+                }
+                localStorage.setItem('prohibidosData', JSON.stringify(prohibidosData));
+            });
+
+            const prohibidosData = JSON.parse(localStorage.getItem('prohibidosData')) || [];
+            const prohibitedBody = document.querySelector("#prohibidosTable tbody");
+            prohibidosData.forEach(data => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${data.fecha}</td>
+                    <td>${data.rut}</td>
+                    <td>${data.nombre}</td>
+                    <td>${data.apellido}</td>
+                    <td>${data.motivo}</td>
+                `;
+                prohibitedBody.appendChild(row);
+            });
+
+            document.getElementById('clearDashboard').addEventListener('click', function() {
+                // Limpiar el gráfico
+                chart.data.labels = [];
+                chart.data.datasets[0].data = [];
+                chart.update();
+
+                // Limpiar las tablas
+                document.querySelector("#visitasTable tbody").innerHTML = '';
+                document.querySelector("#prohibidosTable tbody").innerHTML = '';
+
+                // Limpiar localStorage
+                localStorage.removeItem('chartLabels');
+                localStorage.removeItem('chartData');
+                localStorage.removeItem('visitasData');
+                localStorage.removeItem('prohibidosData');
+            });
+
+            function exportTableToCSV(tableId, filename) {
+                const table = document.getElementById(tableId);
+                const rows = Array.from(table.querySelectorAll('tr'));
+                const csvContent = rows.map(row => {
+                    const cols = Array.from(row.querySelectorAll('th, td'));
+                    return cols.map(col => col.innerText).join(',');
+                }).join('\n');
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.setAttribute('download', filename);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            document.getElementById('exportVisitas').addEventListener('click', function() {
+                exportTableToCSV('visitasTable', 'visitas.csv');
+            });
+
+            document.getElementById('exportProhibidos').addEventListener('click', function() {
+                exportTableToCSV('prohibidosTable', 'prohibidos.csv');
+            });
+
+            $.noConflict();
+            jQuery(document).ready(function($) {
+                $('#visitasTable').DataTable({
+                    "pageLength": 20,
+                    "order": [[0, "desc"]],
+                    "language": {
+                        "lengthMenu": "Mostrar _MENU_ registros por página",
+                        "zeroRecords": "No se encontraron resultados",
+                        "info": "Mostrando página _PAGE_ de _PAGES_",
+                        "infoEmpty": "No hay registros disponibles",
+                        "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                        "search": "Buscar:",
+                        "paginate": {
+                            "first": "Primero",
+                            "last": "Último",
+                            "next": "Siguiente",
+                            "previous": "Anterior"
+                        }
+                    }
+                });
+
+                $('#prohibidosTable').DataTable({
+                    "pageLength": 20,
+                    "order": [[0, "desc"]],
+                    "language": {
+                        "lengthMenu": "Mostrar _MENU_ registros por página",
+                        "zeroRecords": "No se encontraron resultados",
+                        "info": "Mostrando página _PAGE_ de _PAGES_",
+                        "infoEmpty": "No hay registros disponibles",
+                        "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                        "search": "Buscar:",
+                        "paginate": {
+                            "first": "Primero",
+                            "last": "Último",
+                            "next": "Siguiente",
+                            "previous": "Anterior"
+                        }
+                    }
+                });
             });
         });
     </script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 }

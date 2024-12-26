@@ -26,7 +26,7 @@
             <!-- Lista desplegable de visitantes -->
             <div class="form-group">
                 <label asp-for="Visita.ID_Visitante" class="form-label">Visitante</label>
-                <select asp-for="Visita.ID_Visitante" class="form-control" asp-items="Model.VisitantesSelectList"></select>
+                <select asp-for="Visita.ID_Visitante" class="form-control" asp-items="Model.VisitantesSelectList" disabled></select>
                 <span asp-validation-for="Visita.ID_Visitante" class="text-danger"></span>
             </div>
 
@@ -98,6 +98,7 @@
 @section Scripts {
     <script>
         document.getElementById('nuevoRegistro').addEventListener('click', function () {
+            console.log('Botón Nuevo presionado');
             const form = document.getElementById('visitaForm');
             form.reset(); // Reinicia los valores del formulario
 
@@ -106,20 +107,25 @@
             document.querySelector('select[name="Visita.ID_Visitado"]').value = "";
             document.querySelector('select[name="Visita.Motivo_Visita"]').value = "";
             document.querySelector('select[name="Visita.Comentarios"]').value = "";
-            //document.querySelector('select[name="Visita.Estado"]').value = "";
+            console.log('Formulario reiniciado');
 
             // Limpiar mensajes de validación
             document.querySelectorAll('.text-danger').forEach(span => span.innerText = "");
             document.getElementById('rutMessage').innerText = "";
+            console.log('Mensajes de validación limpiados');
         });
     </script>
 
     <script>
+        let visitanteId = null; // Variable para almacenar el ID del visitante
+
         document.getElementById('checkRut').addEventListener('click', async function () {
+            console.log('Verificación de RUT iniciada');
             const rutInputElement = document.getElementById('rutInput');
             let rutInput = rutInputElement.value.trim();
 
             if (validarRut(rutInput)) {
+                console.log('RUT válido');
                 const rutFormateado = formatearRut(rutInput);
                 rutInputElement.value = rutFormateado; // Mostrar el RUT formateado
 
@@ -128,23 +134,41 @@
 
                     if (response.ok) {
                         const data = await response.json();
-                        
-                        const visitanteSelect = document.querySelector('select[name="Visita.ID_Visitante"]');
-                        if (visitanteSelect) {
-                            visitanteSelect.value = data.idVisitante;
-                        }
+                        console.log('Visitante encontrado:', data);
+
+                        visitanteId = data.idVisitante; // Almacenar el ID del visitante
+                        console.log('Visitante ID almacenado:', visitanteId);
 
                         const message = document.getElementById('rutMessage');
                         message.innerText = 'Visitante encontrado y seleccionado.';
                         message.style.color = 'green';
+
+                        const visitanteSelect = document.querySelector('select[name="Visita.ID_Visitante"]');
+                        if (visitanteSelect) {
+                            visitanteSelect.innerHTML = `<option value="${data.idVisitante}">${data.nombreVisitante}</option>`;
+                            console.log('Dropdown actualizado con el visitante:', data.nombreVisitante);
+                        }
                     } else if (response.status === 404) {
+                        console.log('Visitante no encontrado, redirigiendo a creación');
                         window.location.href = `/Visitantes/Create?rut=${encodeURIComponent(rutFormateado)}`;
                     }
                 } catch (error) {
                     console.error('Hubo un problema al verificar el RUT:', error);
                 }
             } else {
+                console.log('RUT no válido');
                 alert("El RUT ingresado no es válido.");
+            }
+        });
+
+        document.getElementById('visitaForm').addEventListener('submit', function (event) {
+            if (visitanteId) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'Visita.ID_Visitante';
+                input.value = visitanteId;
+                this.appendChild(input);
+                console.log('ID del visitante añadido al formulario:', visitanteId);
             }
         });
 
