@@ -38,6 +38,7 @@
 - Mejora del campo de respuesta en la página de ayuda para incluir un filtro de búsqueda.
 - Las respuestas ahora se muestran en una tabla, mejorando la legibilidad y organización de la información.
 - Se implementó un script para filtrar las respuestas en tiempo real, similar a la funcionalidad de la página de informes.
+- Implementación de expresiones regulares para aplicar correctamente el formato de negritas solo al texto entre asteriscos dobles en la página de ayuda.
 
 ### Mejorado
 - Mejora de la página de perfil con diseño responsivo, tooltips y mensajes de retroalimentación para una mejor experiencia de usuario.

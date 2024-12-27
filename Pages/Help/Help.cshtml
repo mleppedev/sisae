@@ -20,7 +20,9 @@
     {
         <div class="mt-4">
             <h4>Respuesta:</h4>
-            <textarea class="form-control" id="sqlQuery" readonly rows="5" style="resize: both;">@Model.Respuesta</textarea>
+            <div class="respuesta-contenedor form-control" id="respuestaFormatted" style="resize: both; overflow: auto; white-space: pre-wrap; border: 1px solid #ccc; border-radius: 8px; padding: 10px; background-color: #f8f9fa;">
+                @Html.Raw(Model.Respuesta)
+            </div>
         </div>
     }
 

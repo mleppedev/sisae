@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace sisae.Pages.Help
 {
@@ -69,11 +70,17 @@ namespace sisae.Pages.Help
                 {
                     var result = await response.Content.ReadAsStringAsync();
                     var jsonResponse = JsonDocument.Parse(result);
-                    return jsonResponse.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
+                    var rawResponse = jsonResponse.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
+
+                    // Reemplazar formato Markdown por etiquetas HTML usando expresiones regulares
+                    rawResponse = Regex.Replace(rawResponse, @"\*\*(.+?)\*\*", "<strong>$1</strong>");
+                    rawResponse = Regex.Replace(rawResponse, @"_(.+?)_", "<em>$1</em>");
+
+                    return rawResponse;
                 }
                 else
                 {
-                    return null;
+                    return "Error al procesar la consulta.";
                 }
             }
         }
