@@ -54,7 +54,7 @@
 ## [1.0.2] - 2025-01-04
 
 ### Modificado
-- Actualización del diseño de las vistas `ChangePassword.cshtml`, `TwoFactorAuthentication.cshtml`, `PersonalData.cshtml`, y `DeletePersonalData.cshtml` para centrar el contenido y mejorar la consistencia visual.
+- Actualización del diseño de las vistas `ChangePassword.cshtml`, `TwoFactorAuthentication.cshtml`, `PersonalData.cshtml`, `DeletePersonalData.cshtml`, `EnableAuthenticator.cshtml`, `ResetAuthenticator.cshtml`, `Index.cshtml`, `Edit.cshtml`, `Create.cshtml`, `Informes.cshtml`, `Help.cshtml`, `AccesosProhibidos/Index.cshtml`, `AccesosProhibidos/Edit.cshtml`, `AccesosProhibidos/Delete.cshtml`, `AccesosProhibidos/Create.cshtml`, `Error.cshtml`, `Privacy.cshtml`, y `Dashboard.cshtml` para centrar el contenido y mejorar la consistencia visual.
 - Ocultación del enlace "Inicios de Sesión Externos" en la vista `Index.cshtml`.
 
 ### Mejorado
