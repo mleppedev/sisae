@@ -23,7 +23,7 @@
 ### Eliminado
 - Restricciones de ancho máximo en el contenedor del dashboard.
 
-## [1.0.1] - 2024-12-26
+## [1.0.1] - 2024-12-28
 
 ### Añadido
 - Implementación de `SmtpEmailSender` para el envío de correos electrónicos utilizando SMTP.
@@ -41,7 +41,6 @@
 - Actualización de `Program.cs` para utilizar las credenciales de correo electrónico desde `secrets.json`.
 - Ajuste de la lógica de envío de correos electrónicos para asegurar que los correos se envíen correctamente.
 - Actualización de la configuración de correo electrónico para utilizar MailerSend con seguridad de conexión TLS.
-- Traducción de las páginas de confirmación de registro y restablecimiento de contraseña al español para mejorar la experiencia del usuario hispanohablante.
 
 ### Mejorado
 - Mejora de la página de perfil con diseño responsivo, tooltips y mensajes de retroalimentación para una mejor experiencia de usuario.
@@ -51,3 +50,8 @@
 ### Corregido
 - Solución al error 404 en la página de ayuda al enviar consultas.
 - Implementación de la devolución de respuestas en el método `OnPostAsync` para asegurar que las respuestas se muestren correctamente al usuario.
+
+## [1.0.2] - 2024-12-28
+
+### Modificado
+- Traducción de las páginas de confirmación de registro y restablecimiento de contraseña al español para mejorar la experiencia del usuario hispanohablante.

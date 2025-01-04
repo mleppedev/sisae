@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 public class SmtpEmailSender : IEmailSender
 {
+    //https://app.mailersend.com/domains/pzkmgq77qnnl059v
     private readonly string _smtpServer;
     private readonly int _port;
     private readonly string _username;
