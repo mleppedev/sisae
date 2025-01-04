@@ -1,24 +1,31 @@
 ﻿@page
 @model PersonalDataModel
 @{
-    ViewData["Title"] = "Personal Data";
+    ViewData["Title"] = "Datos Personales";
     ViewData["ActivePage"] = ManageNavPages.PersonalData;
 }
 
-<h3>@ViewData["Title"]</h3>
-
-<div class="row">
-    <div class="col-md-6">
-        <p>Your account contains personal data that you have given us. This page allows you to download or delete that data.</p>
-        <p>
-            <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
-        </p>
-        <form id="download-data" asp-page="DownloadPersonalData" method="post">
-            <button class="btn btn-primary" type="submit">Download</button>
-        </form>
-        <p>
-            <a id="delete" asp-page="DeletePersonalData" class="btn btn-danger">Delete</a>
-        </p>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">@ViewData["Title"]</h1>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="p-4 border rounded bg-light">
+                <p>Tu cuenta contiene datos personales que nos has proporcionado. Esta página te permite descargar o eliminar esos datos.</p>
+                <p>
+                    <strong>Eliminar estos datos eliminará permanentemente tu cuenta, y esto no se puede recuperar.</strong>
+                </p>
+                <form id="download-data" asp-page="DownloadPersonalData" method="post" class="d-flex justify-content-center mb-3">
+                    <button class="btn btn-primary mx-2" type="submit">Descargar</button>
+                </form>
+                <div class="d-flex justify-content-center">
+                    <a id="delete" asp-page="DeletePersonalData" class="btn btn-danger mx-2">Eliminar</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

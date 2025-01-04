@@ -45,13 +45,13 @@
         </div>
 
         @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
-        <footer class="footer text-muted"> <!-- Pie de página -->
+        <footer class="footer text-muted">
             <div class="container">
-                <div class="row">
-                    <div class="col-md-6">
+                <div class="d-flex justify-content-between">
+                    <div>
                         &copy; 2024 - sisae - <a asp-area="" asp-page="/Privacy">Política de Privacidad</a>
                     </div>
-                    <div class="col-md-6 text-end">
+                    <div>
                         Versión: @Configuration["Version"]
                     </div>
                 </div>

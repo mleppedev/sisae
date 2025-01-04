@@ -51,7 +51,16 @@
 - Solución al error 404 en la página de ayuda al enviar consultas.
 - Implementación de la devolución de respuestas en el método `OnPostAsync` para asegurar que las respuestas se muestren correctamente al usuario.
 
-## [1.0.2] - 2024-12-28
+## [1.0.2] - 2025-01-04
 
 ### Modificado
-- Traducción de las páginas de confirmación de registro y restablecimiento de contraseña al español para mejorar la experiencia del usuario hispanohablante.
+- Actualización del diseño de las vistas `ChangePassword.cshtml`, `TwoFactorAuthentication.cshtml`, `PersonalData.cshtml`, y `DeletePersonalData.cshtml` para centrar el contenido y mejorar la consistencia visual.
+- Ocultación del enlace "Inicios de Sesión Externos" en la vista `Index.cshtml`.
+
+### Mejorado
+- Mejora de la página de perfil con diseño responsivo, tooltips y mensajes de retroalimentación para una mejor experiencia de usuario.
+- Validación en tiempo real para el número de teléfono en el formulario de perfil.
+- Mensajes de confirmación al guardar cambios en el perfil.
+
+### Corregido
+- Se implementó y restauró la funcionalidad de gestión del perfil de usuarios en una aplicación ASP.NET Core con Identity, garantizando el correcto guardado del número de teléfono mediante el uso del método SetPhoneNumberAsync. Además, se preservó el diseño original, incluyendo el menú de navegación lateral y los estilos del formulario, mientras se incorporaron validaciones robustas del lado del servidor con mensajes dinámicos de éxito y error. Finalmente, se sincronizaron los cambios en tiempo real con RefreshSignInAsync, logrando una experiencia de usuario intuitiva y funcional.
