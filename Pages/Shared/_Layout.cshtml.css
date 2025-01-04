@@ -41,16 +41,29 @@ button.accept-policy {
   line-height: inherit;
 }
 
+html, body {
+  height: 100%; /* Asegura que html y body ocupen toda la altura de la ventana */
+  margin: 0; /* Elimina márgenes predeterminados */
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column; /* Permite apilar los elementos verticalmente */
+  min-height: 100vh; /* Asegura que la altura total sea igual a la altura de la ventana */
+}
+
+.content {
+  flex: 1; /* Expande el contenido principal para ocupar el espacio restante */
+}
+
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+  /*background-color: #f8f9fa; /* Fondo del footer */
+  padding: 20px 0; /* Espaciado interno */
+  text-align: center; /* Centrar texto */
+  border-top: 1px solid #e5e5e5; /* Línea superior */
 }
 
 /* Nuevos estilos para el área de respuesta */
-
 #respuestaFormatted {
   border: 1px solid #ccc;
   border-radius: 8px;

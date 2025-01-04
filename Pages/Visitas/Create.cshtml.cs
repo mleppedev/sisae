@@ -11,9 +11,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using sisae.DTOs;
 using sisae.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace sisae.Pages.Visitas
 {
+    [Authorize(Roles = "Administrador, Encargado")]
     public class CreateModel : PageModel
     {
         private readonly ApplicationDbContext _context;

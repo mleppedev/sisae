@@ -143,7 +143,8 @@
 
                         const message = document.getElementById('rutMessage');
                         message.innerText = 'Visitante encontrado y seleccionado.';
-                        message.style.color = 'green';
+                        message.classList.remove('text-danger');
+                        message.classList.add('mensaje-positivo');
 
                         const visitanteSelect = document.querySelector('select[name="Visita.ID_Visitante"]');
                         if (visitanteSelect) {
@@ -152,7 +153,7 @@
                         }
                     } else if (response.status === 404) {
                         console.log('Visitante no encontrado, redirigiendo a creación');
-                        window.location.href = `/Visitantes/Create?rut=${encodeURIComponent(rutFormateado)}`;
+                        window.location.href = `/Visitantes/Create?rut=${encodeURIComponent(rutFormateado)}&returnUrl=${encodeURIComponent(window.location.pathname)}`;
                     }
                 } catch (error) {
                     console.error('Hubo un problema al verificar el RUT:', error);
@@ -171,6 +172,14 @@
                 input.value = visitanteId;
                 this.appendChild(input);
                 console.log('ID del visitante añadido al formulario:', visitanteId);
+            }
+
+            // Actualizar y seleccionar el visitante en el dropdown
+            const visitanteSelect = document.querySelector('select[name="Visita.ID_Visitante"]');
+            if (visitanteSelect) {
+                visitanteSelect.innerHTML = `<option value="${visitanteId}">${rutInputElement.value}</option>`;
+                visitanteSelect.value = visitanteId;
+                console.log('Dropdown actualizado y visitante seleccionado:', rutInputElement.value);
             }
         });
 
@@ -226,4 +235,23 @@
             }
         }
     </script>
+
+    <script>
+        // Simular la entrada del RUT y presionar 'Verificar RUT' al cargar la página
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const rutParam = urlParams.get('rut');
+            if (rutParam) {
+                const rutInputElement = document.getElementById('rutInput');
+                rutInputElement.value = rutParam;
+                document.getElementById('checkRut').click();
+            }
+        });
+    </script>
 }
+
+<style>
+    .mensaje-positivo {
+        color: green;
+    }
+</style>

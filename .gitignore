@@ -1,6 +1,8 @@
 # Ignorar archivos de configuración con credenciales
 secrets.json
+secrets.md
 appsettings.json
+appsettings.md
 
 # Ignorar carpetas de compilación
 bin/

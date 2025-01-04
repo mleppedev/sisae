@@ -26,7 +26,7 @@ namespace sisae.Pages.Visitantes
         public Visitante Visitante { get; set; }
 
         // Método principal para crear visitante
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             if (!ModelState.IsValid)
             {
@@ -79,6 +79,12 @@ namespace sisae.Pages.Visitantes
             }
 
             await _context.SaveChangesAsync();
+
+            // Redirigir según el origen
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                return Redirect(returnUrl + "?rut=" + Visitante.RUT);
+            }
 
             return RedirectToPage("/Index");
         }
@@ -241,10 +247,10 @@ namespace sisae.Pages.Visitantes
 
         private string ExtractNumDocMRZ(string ocrText)
         {
-            // Extraer el n�mero de documento del MRZ (ubicado después de INCHL)
+            // Extraer el número de documento del MRZ (ubicado después de INCHL)
             var numDocRegex = new Regex(@"INCHL(\d{9})");
             var match = numDocRegex.Match(ocrText);
-            return match.Success ? match.Groups[1].Value : "N�mero de documento no encontrado";
+            return match.Success ? match.Groups[1].Value : "Número de documento no encontrado";
         }
 
         private string ExtractRunMRZ(string ocrText)

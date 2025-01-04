@@ -25,20 +25,23 @@
 
 ## [1.0.1] - 2024-12-26
 
+### Añadido
+- Implementación de `SmtpEmailSender` para el envío de correos electrónicos utilizando SMTP.
+- Configuración de credenciales de correo electrónico en `secrets.json` para mejorar la seguridad.
+- Implementación de la devolución de respuestas en el método `OnPostAsync` para asegurar que las respuestas se muestren correctamente al usuario.
+- Implementación de la funcionalidad de envío de correos electrónicos para notificar a los administradores sobre las visitas registradas.
+- Implementación de MailerSend para el envío de correos electrónicos utilizando TLS.
+
 ### Modificado
-- Mejora de la página de perfil con diseño responsivo, tooltips y mensajes de retroalimentación para una mejor experiencia de usuario.
-- Validación en tiempo real para el número de teléfono en el formulario de perfil.
-- Mensajes de confirmación al guardar cambios en el perfil.
-- Ajustes en el diseño de la página de creación de visitas para una mejor visualización de los datos.
-- Ajustes en el diseño de la página de creación de visitados para una mejor visualización de los datos.
-- Ajustes en el diseño de la página de creación de accesos prohibidos para una mejor visualización de los datos.
-- Ajustes en el diseño de la página de edición de visitas para una mejor visualización de los datos.
-- Ajustes en el diseño de la página de edición de visitados para una mejor visualización de los datos.
-- Ajustes en el diseño de la página de edición de accesos prohibidos para una mejor visualización de los datos.
-- Mejora del campo de respuesta en la página de ayuda para incluir un filtro de búsqueda.
-- Las respuestas ahora se muestran en una tabla, mejorando la legibilidad y organización de la información.
-- Se implementó un script para filtrar las respuestas en tiempo real, similar a la funcionalidad de la página de informes.
-- Implementación de expresiones regulares para aplicar correctamente el formato de negritas solo al texto entre asteriscos dobles en la página de ayuda.
+- Automatización de la verificación del RUT y selección del visitante en el formulario de registro de visitas al regresar desde el formulario de creación de visitantes.
+- Mejora en el flujo de redirección para asegurar que el RUT se prellene y se verifique automáticamente.
+- Actualización de la política de privacidad.
+- Reorganización del contenido en la vista `Create.cshtml` para mostrar las imágenes y descripciones en dos columnas, cada una con dos filas, mejorando la presentación visual.
+- Ajuste del script SQL para asegurar la compatibilidad con un servidor SQL Server local, eliminando opciones específicas de Azure y configurando las opciones de la base de datos para un entorno local.
+- Actualización de `Program.cs` para utilizar las credenciales de correo electrónico desde `secrets.json`.
+- Ajuste de la lógica de envío de correos electrónicos para asegurar que los correos se envíen correctamente.
+- Actualización de la configuración de correo electrónico para utilizar MailerSend con seguridad de conexión TLS.
+- Traducción de las páginas de confirmación de registro y restablecimiento de contraseña al español para mejorar la experiencia del usuario hispanohablante.
 
 ### Mejorado
 - Mejora de la página de perfil con diseño responsivo, tooltips y mensajes de retroalimentación para una mejor experiencia de usuario.

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Localization;
 using sisae.Data;
 using sisae.Services;
 using System.Globalization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,13 +18,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString)
            .EnableSensitiveDataLogging()); // Muestra parámetros en los logs
 
-// Filtro para mostrar páginas de excepción para desarrolladores
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-// Configurar ASP.NET Core Identity con roles
+// Configurar ASP.NET Core Identity con roles (Solo se agrega una vez)
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+// Filtro para mostrar páginas de excepción para desarrolladores
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Configurar ajustes de cookies de aplicación
 builder.Services.ConfigureApplicationCookie(options =>
@@ -67,6 +68,15 @@ builder.Services.AddTransient<SignalRService>(provider =>
 // Configurar cliente HTTP para GoogleCloudVisionService
 builder.Services.AddHttpClient<GoogleCloudVisionService>();
 
+var emailSettings = builder.Configuration.GetSection("EmailSettings");
+builder.Services.AddTransient<IEmailSender>(provider =>
+    new SmtpEmailSender(
+        smtpServer: emailSettings["SmtpServer"] ?? throw new ArgumentNullException("SmtpServer"),
+        port: int.Parse(emailSettings["Port"] ?? "587"),
+        username: emailSettings["Username"] ?? throw new ArgumentNullException("Username"),
+        password: emailSettings["Password"] ?? throw new ArgumentNullException("Password")
+    ));
+
 var app = builder.Build();
 
 // Configurar soporte para localización (español e inglés)
@@ -102,6 +112,8 @@ app.UseAuthentication(); // Habilitar autenticación
 app.UseAuthorization(); // Habilitar autorización
 
 app.MapRazorPages(); // Mapear las Razor Pages
+app.MapControllers();
+app.MapFallbackToFile("index.html");
 app.MapHub<DashboardHub>("/dashboardHub"); // Mapear el hub para SignalR
 
 using (var scope = app.Services.CreateScope())
@@ -110,5 +122,11 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
     await SeedData.Initialize(scope.ServiceProvider, userManager);
 }
+
+app.Use(async (context, next) =>
+{
+    context.Items["Configuration"] = builder.Configuration;
+    await next.Invoke();
+});
 
 app.Run(); // Ejecutar la aplicación
