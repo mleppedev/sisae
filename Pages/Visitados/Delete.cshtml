@@ -6,13 +6,26 @@
     ViewData["Title"] = "Eliminar Visitado";
 }
 
-<div class="row">
-    <div class="col-12 text-center pt-3 pb-2 mb-3 border-bottom">
-        <h2 class="h2">¿Estás seguro que deseas eliminar a @Model.Visitado.Nombre @Model.Visitado.Apellido?</h2>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-center pt-3 pb-2 mb-3 border-bottom">
+            <h2 class="h2">Eliminar Visitado</h2>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="p-4 border rounded bg-light shadow-sm">
+                <h3 class="text-danger text-center"><i class="fas fa-exclamation-triangle"></i> ¿Estás seguro que deseas eliminar este registro?</h3>
+                <p class="text-center font-weight-bold">@Model.Visitado.Nombre @Model.Visitado.Apellido</p>
+                <form method="post" class="mt-4">
+                    <button type="submit" class="btn btn-danger w-100 mb-2"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                    <a asp-page="./Index" class="btn btn-secondary w-100"><i class="fas fa-arrow-left"></i> Cancelar</a>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
-<form method="post">
-    <button type="submit" class="btn btn-danger">Eliminar</button>
-    <a asp-page="./Index" class="btn btn-secondary">Cancelar</a>
-</form>
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}

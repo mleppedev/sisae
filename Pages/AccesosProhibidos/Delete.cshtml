@@ -6,29 +6,36 @@
     ViewData["Title"] = "Eliminar Acceso Prohibido";
 }
 
-<div class="row">
-    <div class="col-12 text-center pt-3 pb-2 mb-3 border-bottom">
-        <h2 class="h2">Eliminar Acceso Prohibido</h2>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-center pt-3 pb-2 mb-3 border-bottom">
+            <h2 class="h2">Eliminar Acceso Prohibido</h2>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="p-4 border rounded bg-light shadow-sm">
+                <h3 class="text-danger text-center"><i class="fas fa-exclamation-triangle"></i> ¿Estás seguro que deseas eliminar este acceso prohibido?</h3>
+                <dl class="row mt-4">
+                    <dt class="col-sm-4 font-weight-bold">Visitante:</dt>
+                    <dd class="col-sm-8">@Model.AccesoProhibido.Visitante.Nombre @Model.AccesoProhibido.Visitante.Apellido</dd>
+                    <dt class="col-sm-4 font-weight-bold">Fecha de Prohibición:</dt>
+                    <dd class="col-sm-8">@Model.AccesoProhibido.Fecha_Prohibicion.ToShortDateString()</dd>
+                    <dt class="col-sm-4 font-weight-bold">Fecha de Expiración:</dt>
+                    <dd class="col-sm-8">@Model.AccesoProhibido.Fecha_Expiracion?.ToShortDateString()</dd>
+                    <dt class="col-sm-4 font-weight-bold">Motivo:</dt>
+                    <dd class="col-sm-8">@Model.AccesoProhibido.Motivo</dd>
+                </dl>
+                <form method="post" class="mt-4">
+                    <input type="hidden" asp-for="AccesoProhibido.ID_Acceso_Prohibido" />
+                    <button type="submit" class="btn btn-danger w-100 mb-2"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                    <a asp-page="./Index" class="btn btn-secondary w-100"><i class="fas fa-arrow-left"></i> Cancelar</a>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
-<h3>¿Estás seguro que deseas eliminar este acceso prohibido?</h3>
-
-<div>
-    <dl class="row">
-        <dt class="col-sm-2">Visitante</dt>
-        <dd class="col-sm-10">@Model.AccesoProhibido.Visitante.Nombre @Model.AccesoProhibido.Visitante.Apellido</dd>
-        <dt class="col-sm-2">Fecha de Prohibición</dt>
-        <dd class="col-sm-10">@Model.AccesoProhibido.Fecha_Prohibicion.ToShortDateString()</dd>
-        <dt class="col-sm-2">Fecha de Expiración</dt>
-        <dd class="col-sm-10">@Model.AccesoProhibido.Fecha_Expiracion?.ToShortDateString()</dd>
-        <dt class="col-sm-2">Motivo</dt>
-        <dd class="col-sm-10">@Model.AccesoProhibido.Motivo</dd>
-    </dl>
-
-    <form method="post">
-        <input type="hidden" asp-for="AccesoProhibido.ID_Acceso_Prohibido" />
-        <button type="submit" class="btn btn-danger">Eliminar</button>
-        <a asp-page="./Index" class="btn btn-secondary">Cancelar</a>
-    </form>
-</div>
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}
