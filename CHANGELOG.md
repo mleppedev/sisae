@@ -56,6 +56,16 @@
 ### Modificado
 - Actualización del diseño de las vistas `ChangePassword.cshtml`, `TwoFactorAuthentication.cshtml`, `PersonalData.cshtml`, `DeletePersonalData.cshtml`, `EnableAuthenticator.cshtml`, `ResetAuthenticator.cshtml`, `Index.cshtml`, `Edit.cshtml`, `Create.cshtml`, `Informes.cshtml`, `Help.cshtml`, `AccesosProhibidos/Index.cshtml`, `AccesosProhibidos/Edit.cshtml`, `AccesosProhibidos/Delete.cshtml`, `AccesosProhibidos/Create.cshtml`, `Error.cshtml`, `Privacy.cshtml`, y `Dashboard.cshtml` para centrar el contenido y mejorar la consistencia visual.
 - Ocultación del enlace "Inicios de Sesión Externos" en la vista `Index.cshtml`.
+- Mejora en la disposición de los elementos en `Help.cshtml` para una mejor organización y usabilidad.
+- Actualización de la lógica en `Help.cshtml.cs` para asegurar la consistencia con las prácticas actuales y mejorar la robustez en el manejo de consultas y respuestas.
+
+### Añadido
+- Botón "NUEVO" en `Informes.cshtml` para limpiar los campos de entrada y enfocar el campo de consulta.
+- Botón "NUEVO" en `Help.cshtml` para limpiar los campos de entrada y enfocar el campo de consulta.
+- Botón "NUEVO" en `Visitados/Create.cshtml` para limpiar los campos de entrada y enfocar el campo de consulta.
+- Botón "NUEVO" en `Visitados/Edit.cshtml` para limpiar los campos de entrada y enfocar el campo de consulta.
+- Botón "NUEVO" en `Visitados/Delete.cshtml` para limpiar los campos de entrada y enfocar el campo de consulta.
+- Botón "NUEVO" en `Visitados/Index.cshtml` para limpiar los campos de entrada y enfocar el campo de consulta.
 
 ### Mejorado
 - Mejora de la página de perfil con diseño responsivo, tooltips y mensajes de retroalimentación para una mejor experiencia de usuario.

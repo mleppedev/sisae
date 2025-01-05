@@ -6,75 +6,75 @@
     ViewData["Title"] = "Editar Visita";
 }
 
-<div class="row">
-    <div class="col-12 text-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Editar Visita</h1>
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-12 text-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Editar Visita</h1>
+        </div>
     </div>
-</div>
-
-<div class="container mt-5">
-    <form method="post" class="row g-3">
-        <input type="hidden" asp-for="Visita.ID_Visita" />
-
-        <div class="col-md-6">
-            <div class="form-group">
-                <label asp-for="Visita.ID_Visitante" class="form-label">Visitante</label>
-                <select asp-for="Visita.ID_Visitante" class="form-control" asp-items="Model.VisitantesSelectList"></select>
-                <span asp-validation-for="Visita.ID_Visitante" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mt-3">
-                <label asp-for="Visita.ID_Visitado" class="form-label">Visitado</label>
-                <select asp-for="Visita.ID_Visitado" class="form-control" asp-items="@(new SelectList(Model.Visitados, "ID_Visitado", "Nombre"))"></select>
-                <span asp-validation-for="Visita.ID_Visitado" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mt-3">
-                <label asp-for="Visita.Motivo_Visita" class="form-label">Motivo de la Visita</label>
-                <input asp-for="Visita.Motivo_Visita" class="form-control" />
-                <span asp-validation-for="Visita.Motivo_Visita" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mt-3">
-                <label asp-for="Visita.Comentarios" class="form-label">Comentarios</label>
-                <textarea asp-for="Visita.Comentarios" class="form-control"></textarea>
-                <span asp-validation-for="Visita.Comentarios" class="text-danger"></span>
-            </div>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form method="post" class="p-4 border rounded bg-light">
+                <input type="hidden" asp-for="Visita.ID_Visita" />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-floating mb-3">
+                            <select asp-for="Visita.ID_Visitante" class="form-control" asp-items="Model.VisitantesSelectList" disabled></select>
+                            <label asp-for="Visita.ID_Visitante">Visitante</label>
+                            <span asp-validation-for="Visita.ID_Visitante" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <select asp-for="Visita.ID_Visitado" class="form-control" asp-items="@(new SelectList(Model.Visitados, "ID_Visitado", "Nombre"))"></select>
+                            <label asp-for="Visita.ID_Visitado">Visitado</label>
+                            <span asp-validation-for="Visita.ID_Visitado" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Visita.Motivo_Visita" class="form-control" />
+                            <label asp-for="Visita.Motivo_Visita">Motivo de la Visita</label>
+                            <span asp-validation-for="Visita.Motivo_Visita" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <textarea asp-for="Visita.Comentarios" class="form-control"></textarea>
+                            <label asp-for="Visita.Comentarios">Comentarios</label>
+                            <span asp-validation-for="Visita.Comentarios" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input asp-for="Visita.Fecha_Visita" class="form-control" />
+                            <label asp-for="Visita.Fecha_Visita">Fecha de Visita</label>
+                            <span asp-validation-for="Visita.Fecha_Visita" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Visita.Hora_Entrada" class="form-control" />
+                            <label asp-for="Visita.Hora_Entrada">Hora de Entrada</label>
+                            <span asp-validation-for="Visita.Hora_Entrada" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input asp-for="Visita.Hora_Salida" class="form-control" />
+                            <label asp-for="Visita.Hora_Salida">Hora de Salida (Opcional)</label>
+                            <span asp-validation-for="Visita.Hora_Salida" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <select asp-for="Visita.Estado" class="form-control">
+                                <option value="Activa">Activa</option>
+                                <option value="Completada">Completada</option>
+                                <option value="Cancelada">Cancelada</option>
+                            </select>
+                            <label asp-for="Visita.Estado">Estado de la Visita</label>
+                            <span asp-validation-for="Visita.Estado" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center mt-5">
+                    <button type="submit" class="btn btn-primary me-2">Guardar Cambios</button>
+                    <a asp-page="./Index" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
         </div>
-
-        <div class="col-md-6">
-            <div class="form-group mt-3">
-                <label asp-for="Visita.Fecha_Visita" class="form-label">Fecha de Visita</label>
-                <input asp-for="Visita.Fecha_Visita" class="form-control" />
-                <span asp-validation-for="Visita.Fecha_Visita" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mt-3">
-                <label asp-for="Visita.Hora_Entrada" class="form-label">Hora de Entrada</label>
-                <input asp-for="Visita.Hora_Entrada" class="form-control" />
-                <span asp-validation-for="Visita.Hora_Entrada" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mt-3">
-                <label asp-for="Visita.Hora_Salida" class="form-label">Hora de Salida (Opcional)</label>
-                <input asp-for="Visita.Hora_Salida" class="form-control" />
-                <span asp-validation-for="Visita.Hora_Salida" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mt-3">
-                <label asp-for="Visita.Estado" class="form-label">Estado de la Visita</label>
-                <select asp-for="Visita.Estado" class="form-control">
-                    <option value="Activa">Activa</option>
-                    <option value="Completada">Completada</option>
-                    <option value="Cancelada">Cancelada</option>
-                </select>
-                <span asp-validation-for="Visita.Estado" class="text-danger"></span>
-            </div>
-        </div>
-
-        <div class="col-12 text-center mt-5">
-            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            <a asp-page="./Index" class="btn btn-secondary ms-2">Cancelar</a>
-        </div>
-    </form>
+    </div>
 </div>

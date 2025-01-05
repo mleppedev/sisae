@@ -272,5 +272,25 @@ namespace sisae.Pages.Visitantes
 
             return "RUN no encontrado";
         }
+
+        public async Task<IActionResult> OnGetAsync(string rut = null, bool nuevo = false)
+        {
+            if (nuevo)
+            {
+                Visitante = new Visitante();
+                // Establecer la fecha actual
+                Visitante.FechaNacimiento = DateTime.Now.Date;
+            }
+            else if (!string.IsNullOrEmpty(rut))
+            {
+                var visitante = await _context.Visitantes.FirstOrDefaultAsync(v => v.RUT == rut);
+                if (visitante != null)
+                {
+                    Visitante = visitante;
+                }
+            }
+
+            return Page();
+        }
     }
 }

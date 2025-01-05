@@ -27,6 +27,7 @@ namespace sisae.Pages.Visitas
 
         public List<Visitado> Visitados { get; set; }
         public List<SelectListItem> VisitantesSelectList { get; set; }
+        public List<SelectListItem> VisitadosSelectList { get; set; }
 
         // Obtener la visita existente y las listas de visitantes/visitados
         public async Task<IActionResult> OnGetAsync(int? id)
@@ -52,6 +53,19 @@ namespace sisae.Pages.Visitas
                 Value = v.ID_Visitante.ToString(),
                 Text = $"{v.Apellido}, {v.Nombre} ({v.RUT})"
             }).ToListAsync();
+
+            VisitadosSelectList = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "", Text = "Seleccione..." } // Opción predeterminada
+            };
+            VisitadosSelectList.AddRange(await _context.Visitados
+                .OrderBy(v => v.Apellido)
+                .ThenBy(v => v.Nombre)
+                .Select(v => new SelectListItem
+                {
+                    Value = v.ID_Visitado.ToString(),
+                    Text = $"{v.Apellido}, {v.Nombre} ({v.Cargo})"
+                }).ToListAsync());
 
             await _eventLoggerService.LogEventAsync("AccesoEditorVisita", $"Acceso al editor de visitas para la visita con ID {id}", User?.Identity?.Name);
             return Page();

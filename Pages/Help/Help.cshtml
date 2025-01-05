@@ -12,10 +12,10 @@
     </div>
     <p>¿Tienes alguna duda o necesitas asistencia? Escribe tu consulta y nuestro asistente virtual te ayudará.</p>
 
-    <form method="post">
-        <div class="form-group">
-            <label for="consulta">Consulta:</label>
+    <form method="post" class="mt-4">
+        <div class="form-floating mb-3">
             <input type="text" class="form-control" id="consulta" asp-for="Consulta" placeholder="Escribe tu pregunta aquí" />
+            <label for="consulta">Consulta:</label>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Enviar</button>
     </form>

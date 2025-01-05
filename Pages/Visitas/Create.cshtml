@@ -17,67 +17,82 @@
             <!-- Mostrar alertas solo si hay errores -->
             @if (ModelState.ErrorCount > 0)
             {
-                <div asp-validation-summary="All" class="alert alert-danger text-center" role="alert"></div>
+                <div class="alert alert-danger text-center" role="alert">
+                    @foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
             }
 
             <form id="visitaForm" method="post" class="p-4 border rounded bg-light">
-                <div class="form-floating mb-3">
-                    <input type="text" id="rutInput" class="form-control" placeholder="Ej: 12.345.678-9" />
-                    <label for="rutInput">RUT del Visitante</label>
-                    <button type="button" id="checkRut" class="btn btn-secondary mt-2">Verificar RUT</button>
-                    <div id="rutMessage" class="text-danger mt-2"></div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-floating mb-3">
+                            <input type="text" id="rutInput" class="form-control" placeholder="Ej: 12.345.678-9" />
+                            <label for="rutInput">RUT del Visitante</label>
+                            <button type="button" id="checkRut" class="btn btn-secondary mt-2">Verificar RUT</button>
+                            <div id="rutMessage" class="text-danger mt-2"></div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select asp-for="Visita.ID_Visitante" class="form-control" asp-items="Model.VisitantesSelectList" disabled></select>
+                            <label asp-for="Visita.ID_Visitante">Visitante</label>
+                            <span asp-validation-for="Visita.ID_Visitante" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select asp-for="Visita.ID_Visitado" class="form-control" asp-items="Model.VisitadosSelectList"></select>
+                            <label asp-for="Visita.ID_Visitado">Visitado</label>
+                            <span asp-validation-for="Visita.ID_Visitado" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Visita.Motivo_Visita" class="form-control" />
+                            <label asp-for="Visita.Motivo_Visita">Motivo de la Visita</label>
+                            <span asp-validation-for="Visita.Motivo_Visita" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <textarea asp-for="Visita.Comentarios" class="form-control"></textarea>
+                            <label asp-for="Visita.Comentarios">Comentarios</label>
+                            <span asp-validation-for="Visita.Comentarios" class="text-danger"></span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-floating mb-3">
-                    <select asp-for="Visita.ID_Visitante" class="form-control" asp-items="Model.VisitantesSelectList" disabled></select>
-                    <label asp-for="Visita.ID_Visitante">Visitante</label>
-                    <span asp-validation-for="Visita.ID_Visitante" class="text-danger"></span>
-                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input asp-for="Visita.Fecha_Visita" class="form-control" />
+                            <label asp-for="Visita.Fecha_Visita">Fecha de Visita</label>
+                            <span asp-validation-for="Visita.Fecha_Visita" class="text-danger"></span>
+                        </div>
 
-                <div class="form-floating mb-3">
-                    <select asp-for="Visita.ID_Visitado" class="form-control" asp-items="Model.VisitadosSelectList"></select>
-                    <label asp-for="Visita.ID_Visitado">Visitado</label>
-                    <span asp-validation-for="Visita.ID_Visitado" class="text-danger"></span>
-                </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Visita.Hora_Entrada" class="form-control" />
+                            <label asp-for="Visita.Hora_Entrada">Hora de Entrada</label>
+                            <span asp-validation-for="Visita.Hora_Entrada" class="text-danger"></span>
+                        </div>
+                    </div>
 
-                <div class="form-floating mb-3">
-                    <input asp-for="Visita.Motivo_Visita" class="form-control" />
-                    <label asp-for="Visita.Motivo_Visita">Motivo de la Visita</label>
-                    <span asp-validation-for="Visita.Motivo_Visita" class="text-danger"></span>
-                </div>
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input asp-for="Visita.Hora_Salida" class="form-control" />
+                            <label asp-for="Visita.Hora_Salida">Hora de Salida (Opcional)</label>
+                            <span asp-validation-for="Visita.Hora_Salida" class="text-danger"></span>
+                        </div>
 
-                <div class="form-floating mb-3">
-                    <textarea asp-for="Visita.Comentarios" class="form-control"></textarea>
-                    <label asp-for="Visita.Comentarios">Comentarios</label>
-                    <span asp-validation-for="Visita.Comentarios" class="text-danger"></span>
-                </div>
-
-                <div class="form-floating mb-3">
-                    <input asp-for="Visita.Fecha_Visita" class="form-control" />
-                    <label asp-for="Visita.Fecha_Visita">Fecha de Visita</label>
-                    <span asp-validation-for="Visita.Fecha_Visita" class="text-danger"></span>
-                </div>
-
-                <div class="form-floating mb-3">
-                    <input asp-for="Visita.Hora_Entrada" class="form-control" />
-                    <label asp-for="Visita.Hora_Entrada">Hora de Entrada</label>
-                    <span asp-validation-for="Visita.Hora_Entrada" class="text-danger"></span>
-                </div>
-
-                <div class="form-floating mb-3">
-                    <input asp-for="Visita.Hora_Salida" class="form-control" />
-                    <label asp-for="Visita.Hora_Salida">Hora de Salida (Opcional)</label>
-                    <span asp-validation-for="Visita.Hora_Salida" class="text-danger"></span>
-                </div>
-
-                <div class="form-floating mb-3">
-                    <select asp-for="Visita.Estado" class="form-control">
-                        <option value="Activa">Activa</option>
-                        <option value="Completada">Completada</option>
-                        <option value="Cancelada">Cancelada</option>
-                    </select>
-                    <label asp-for="Visita.Estado">Estado de la Visita</label>
-                    <span asp-validation-for="Visita.Estado" class="text-danger"></span>
+                        <div class="form-floating mb-3">
+                            <select asp-for="Visita.Estado" class="form-control">
+                                <option value="Activa">Activa</option>
+                                <option value="Completada">Completada</option>
+                                <option value="Cancelada">Cancelada</option>
+                            </select>
+                            <label asp-for="Visita.Estado">Estado de la Visita</label>
+                            <span asp-validation-for="Visita.Estado" class="text-danger"></span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="d-flex justify-content-center mt-5">
@@ -97,17 +112,42 @@
             const form = document.getElementById('visitaForm');
             form.reset(); // Reinicia los valores del formulario
 
-            // Reiniciar los selects a "Seleccione..."
+            // Establecer la fecha y hora actuales
+            const fechaActual = new Date().toISOString().split('T')[0];
+            const horaActual = new Date().toTimeString().split(' ')[0].slice(0, 5);
+            document.querySelector('input[name="Visita.Fecha_Visita"]').value = fechaActual;
+            document.querySelector('input[name="Visita.Hora_Entrada"]').value = horaActual;
+
+            // Restablecer los campos de selección
             document.querySelector('select[name="Visita.ID_Visitante"]').value = "";
             document.querySelector('select[name="Visita.ID_Visitado"]').value = "";
-            document.querySelector('select[name="Visita.Motivo_Visita"]').value = "";
-            document.querySelector('select[name="Visita.Comentarios"]').value = "";
-            console.log('Formulario reiniciado');
 
-            // Limpiar mensajes de validación
+            // Limpiar campos de texto
+            document.querySelector('input[name="Visita.Motivo_Visita"]').value = "";
+            document.querySelector('textarea[name="Visita.Comentarios"]').value = "";
+
+            // Limpiar mensajes de validación y alertas
             document.querySelectorAll('.text-danger').forEach(span => span.innerText = "");
+            const alertElement = document.querySelector('.alert-danger');
+            if (alertElement) alertElement.style.display = 'none';
             document.getElementById('rutMessage').innerText = "";
-            console.log('Mensajes de validación limpiados');
+            console.log('Formulario reiniciado y mensajes de validación limpiados');
+        });
+
+        // Establecer la fecha y hora actuales al cargar la página
+        window.addEventListener('load', function() {
+            const fechaActual = new Date().toISOString().split('T')[0];
+            const horaActual = new Date().toTimeString().split(' ')[0].slice(0, 5);
+            document.querySelector('input[name="Visita.Fecha_Visita"]').value = fechaActual;
+            document.querySelector('input[name="Visita.Hora_Entrada"]').value = horaActual;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const rutParam = urlParams.get('rut');
+            if (rutParam) {
+                const rutInputElement = document.getElementById('rutInput');
+                rutInputElement.value = rutParam;
+                document.getElementById('checkRut').click();
+            }
         });
     </script>
 
@@ -227,19 +267,6 @@
                 return `${cuerpo}-${dv}`;
             }
         }
-    </script>
-
-    <script>
-        // Simular la entrada del RUT y presionar 'Verificar RUT' al cargar la página
-        window.addEventListener('load', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const rutParam = urlParams.get('rut');
-            if (rutParam) {
-                const rutInputElement = document.getElementById('rutInput');
-                rutInputElement.value = rutParam;
-                document.getElementById('checkRut').click();
-            }
-        });
     </script>
 }
 

@@ -14,25 +14,34 @@
     </div>
     <p>Escribe tu consulta para obtener informes detallados sobre las visitas.</p>
 
-    <form method="post" id="queryForm">
-        <div class="form-group">
-            <label for="predefinedQueries">Consultas preestablecidas:</label>
-            <select class="form-control" id="predefinedQueries" name="SelectedQuery">
-                <option value="">Seleccione una consulta</option>
-                <option value="1">Visitante con más visitas</option>
-                <option value="2">Listado de personas con ingreso prohibido</option>
-                <option value="3">Suma cuantas visitas en total han venido hoy</option>
-                <option value="4">Genera un listado de todos los Visitados registrados ordenado alfabéticamente </option>
-                <option value="5">Genera un listado de todos los Visitados que han recibido visitas, agrúpalos y muestra el total de visitas de cada uno</option>
-                <option value="6">Quien es la visita que ha visitado más veces a un mismo visitado?</option>
-                <!-- Agrega más opciones según necesites -->
-            </select>
+    <form method="post" id="queryForm" class="mt-4">
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="form-floating mb-3">
+                    <select class="form-control" id="predefinedQueries" name="SelectedQuery">
+                        <option value="">Seleccione una consulta</option>
+                        <option value="1">Visitante con más visitas</option>
+                        <option value="2">Listado de personas con ingreso prohibido</option>
+                        <option value="3">Suma cuantas visitas en total han venido hoy</option>
+                        <option value="4">Genera un listado de todos los Visitados registrados ordenado alfabéticamente </option>
+                        <option value="5">Genera un listado de todos los Visitados que han recibido visitas, agrúpalos y muestra el total de visitas de cada uno</option>
+                        <option value="6">Quien es la visita que ha visitado más veces a un mismo visitado?</option>
+                        <!-- Agrega más opciones según necesites -->
+                    </select>
+                    <label for="predefinedQueries">Consultas preestablecidas:</label>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="consulta" asp-for="Consulta" placeholder="Escribe tu consulta o selecciona una preestablecida" />
+                    <label for="consulta">Consulta:</label>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="consulta">Consulta:</label>
-            <input type="text" class="form-control" id="consulta" asp-for="Consulta" placeholder="Escribe tu consulta o selecciona una preestablecida" />
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary mt-3">Enviar</button>
+            <button type="button" id="nuevoBtn" class="btn btn-warning mt-3">Nuevo</button>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Enviar</button>
     </form>
 
     @if (Model.SqlQuery != null)
@@ -42,7 +51,6 @@
             <textarea class="form-control" id="sqlQuery" readonly rows="5" style="resize: both;">@Model.SqlQuery</textarea>
         </div>
     }
-
 
     @if (Model.Respuesta != null && Model.Respuesta.Count > 0)
     {
@@ -72,47 +80,57 @@
         </table>
     }
 
-        <script>
-            document.getElementById('filtro').addEventListener('input', function() {
-                var filtro = this.value.toLowerCase();
-                var filas = document.querySelectorAll('#tablaRespuesta tbody tr');
-                filas.forEach(function(fila) {
-                    fila.style.display = fila.textContent.toLowerCase().includes(filtro) ? '' : 'none';
-                });
+    <script>
+        document.getElementById('filtro').addEventListener('input', function() {
+            var filtro = this.value.toLowerCase();
+            var filas = document.querySelectorAll('#tablaRespuesta tbody tr');
+            filas.forEach(function(fila) {
+                fila.style.display = fila.textContent.toLowerCase().includes(filtro) ? '' : 'none';
             });
-        </script>
+        });
 
-        <script>
-            document.getElementById('predefinedQueries').addEventListener('change', function() {
-                var selectedQuery = this.value;
-                var consultaInput = document.getElementById('consulta');
-                
-                switch (selectedQuery) {
-                    case "1":
-                        consultaInput.value = "SELECT TOP 1 CONCAT(VU.NOMBRE, ' ', VU.APELLIDO) AS VISITANTE, COUNT(V.ID_Visita) AS TOTAL_VISITAS FROM Visitas V JOIN Visitantes VU ON V.ID_Visitante = VU.ID_Visitante GROUP BY CONCAT(VU.NOMBRE, ' ', VU.APELLIDO) ORDER BY TOTAL_VISITAS DESC;";
-                        break;
-                    case "2":
-                        consultaInput.value = "SELECT TOP 100 UPPER(CONCAT(v.NOMBRE, ' ', v.APELLIDO)) AS VISITANTE, CONVERT(VARCHAR, a.FECHA_PROHIBICION, 103) AS 'FECHA PROHIBICION', CONVERT(VARCHAR, a.FECHA_EXPIRACION, 103) AS 'FECHA EXPIRACION', UPPER(a.MOTIVO) AS MOTIVO FROM AccesosProhibidos a JOIN Visitantes v ON a.ID_Visitante = v.ID_Visitante ORDER BY a.FECHA_PROHIBICION DESC, a.FECHA_EXPIRACION DESC;";
-                        break;
-                    case "3":
-                        consultaInput.value = "SELECT COUNT(*) AS TOTAL_VISITAS_HOY FROM Visitas WHERE CONVERT(VARCHAR, Fecha_Visita, 103) = CONVERT(VARCHAR, GETDATE(), 103);";
-                        break;
-                    case "4":
-                        consultaInput.value = "SELECT TOP 100 UPPER(NOMBRE + ' ' + APELLIDO) AS VISITADO, UPPER(CARGO) AS CARGO, UPPER(DEPARTAMENTO) AS DEPARTAMENTO, UPPER(EMAIL) AS EMAIL, TELEFONO FROM Visitados ORDER BY VISITADO;";
-                        break;
-                    case "5":
-                        consultaInput.value = "SELECT TOP 100 UPPER(CONCAT(vd.Nombre, ' ', vd.Apellido)) AS VISITADO, COUNT(v.ID_Visita) AS TOTAL_VISITAS FROM Visitas v JOIN Visitados vd ON v.ID_Visitado = vd.ID_Visitado GROUP BY vd.Nombre, vd.Apellido ORDER BY COUNT(v.ID_Visita) DESC, MAX(v.Fecha_Visita) DESC, MAX(v.Hora_Entrada) DESC;";
-                        break;
-                    case "6":
-                        consultaInput.value = "SELECT TOP 100 CONCAT(VISITANTES.NOMBRE, ' ', VISITANTES.APELLIDO) AS VISITANTE, CONCAT(VISITADOS.NOMBRE, ' ', VISITADOS.APELLIDO) AS VISITADO, COUNT(Visitas.ID_Visita) AS CANTIDAD_VISITAS FROM Visitas JOIN Visitantes ON Visitas.ID_Visitante = Visitantes.ID_Visitante JOIN Visitados ON Visitas.ID_Visitado = Visitados.ID_Visitado GROUP BY CONCAT(VISITANTES.NOMBRE, ' ', VISITANTES.APELLIDO), CONCAT(VISITADOS.NOMBRE, ' ', VISITADOS.APELLIDO) ORDER BY CANTIDAD_VISITAS DESC;";
-                        break;
-                    // Agregar más casos según sea necesario
-                    default:
-                        consultaInput.value = "";
-                        break;
-                }
+        document.getElementById('queryForm').addEventListener('submit', function() {
+            // document.getElementById('consulta').value = '';
+        });
 
-                document.getElementById('queryForm').submit();
-            });
-        </script>
+        document.getElementById('nuevoBtn').addEventListener('click', function() {
+            document.getElementById('predefinedQueries').selectedIndex = 0;
+            document.getElementById('consulta').value = '';
+            document.getElementById('consulta').focus();
+        });
+    </script>
+
+    <script>
+        document.getElementById('predefinedQueries').addEventListener('change', function() {
+            var selectedQuery = this.value;
+            var consultaInput = document.getElementById('consulta');
+            
+            switch (selectedQuery) {
+                case "1":
+                    consultaInput.value = "SELECT TOP 1 CONCAT(VU.NOMBRE, ' ', VU.APELLIDO) AS VISITANTE, COUNT(V.ID_Visita) AS TOTAL_VISITAS FROM Visitas V JOIN Visitantes VU ON V.ID_Visitante = VU.ID_Visitante GROUP BY CONCAT(VU.NOMBRE, ' ', VU.APELLIDO) ORDER BY TOTAL_VISITAS DESC;";
+                    break;
+                case "2":
+                    consultaInput.value = "SELECT TOP 100 UPPER(CONCAT(v.NOMBRE, ' ', v.APELLIDO)) AS VISITANTE, CONVERT(VARCHAR, a.FECHA_PROHIBICION, 103) AS 'FECHA PROHIBICION', CONVERT(VARCHAR, a.FECHA_EXPIRACION, 103) AS 'FECHA EXPIRACION', UPPER(a.MOTIVO) AS MOTIVO FROM AccesosProhibidos a JOIN Visitantes v ON a.ID_Visitante = v.ID_Visitante ORDER BY a.FECHA_PROHIBICION DESC, a.FECHA_EXPIRACION DESC;";
+                    break;
+                case "3":
+                    consultaInput.value = "SELECT COUNT(*) AS TOTAL_VISITAS_HOY FROM Visitas WHERE CONVERT(VARCHAR, Fecha_Visita, 103) = CONVERT(VARCHAR, GETDATE(), 103);";
+                    break;
+                case "4":
+                    consultaInput.value = "SELECT TOP 100 UPPER(NOMBRE + ' ' + APELLIDO) AS VISITADO, UPPER(CARGO) AS CARGO, UPPER(DEPARTAMENTO) AS DEPARTAMENTO, UPPER(EMAIL) AS EMAIL, TELEFONO FROM Visitados ORDER BY VISITADO;";
+                    break;
+                case "5":
+                    consultaInput.value = "SELECT TOP 100 UPPER(CONCAT(vd.Nombre, ' ', vd.Apellido)) AS VISITADO, COUNT(v.ID_Visita) AS TOTAL_VISITAS FROM Visitas v JOIN Visitados vd ON v.ID_Visitado = vd.ID_Visitado GROUP BY vd.Nombre, vd.Apellido ORDER BY COUNT(v.ID_Visita) DESC, MAX(v.Fecha_Visita) DESC, MAX(v.Hora_Entrada) DESC;";
+                    break;
+                case "6":
+                    consultaInput.value = "SELECT TOP 100 CONCAT(VISITANTES.NOMBRE, ' ', VISITANTES.APELLIDO) AS VISITANTE, CONCAT(VISITADOS.NOMBRE, ' ', VISITADOS.APELLIDO) AS VISITADO, COUNT(Visitas.ID_Visita) AS CANTIDAD_VISITAS FROM Visitas JOIN Visitantes ON Visitas.ID_Visitante = Visitantes.ID_Visitante JOIN Visitados ON Visitas.ID_Visitado = Visitados.ID_Visitado GROUP BY CONCAT(VISITANTES.NOMBRE, ' ', VISITANTES.APELLIDO), CONCAT(VISITADOS.NOMBRE, ' ', VISITADOS.APELLADO) ORDER BY CANTIDAD_VISITAS DESC;";
+                    break;
+                // Agregar más casos según sea necesario
+                default:
+                    consultaInput.value = "";
+                    break;
+            }
+
+            document.getElementById('queryForm').submit();
+        });
+    </script>
 </div>

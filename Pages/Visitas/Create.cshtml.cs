@@ -41,6 +41,9 @@ namespace sisae.Pages.Visitas
             if (nuevo)
             {
                 LimpiarVisita();
+                // Establecer la fecha y hora actuales
+                Visita.Fecha_Visita = DateTime.Now.Date;
+                Visita.Hora_Entrada = DateTime.Now.TimeOfDay;
             }
             else if (!string.IsNullOrEmpty(rut))
             {
@@ -136,7 +139,6 @@ namespace sisae.Pages.Visitas
                 // Agregar un error al modelo
                 ModelState.AddModelError(string.Empty, "El visitante tiene acceso prohibido y no puede registrarse.");
                 await LlenarListasDesplegablesAsync();
-                LimpiarVisita(); // Limpiar los campos después de un acceso prohibido
                 return Page();
             }
 
@@ -223,6 +225,7 @@ namespace sisae.Pages.Visitas
         public void LimpiarVisita()
         {
             Visita = new Visita();
+            Visita.ID_Visitante = 0; // Restablecer el campo ID_Visitante
         }
     }
 }

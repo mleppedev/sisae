@@ -6,60 +6,59 @@
     ViewData["Title"] = "Editar Visitado";
 }
 
-<div class="row">
-    <div class="col-12 text-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Editar Contacto Interno</h1>
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-12 text-center pt-3 pb-2 mb-3 border-bottom">
+            <h2 class="h2">Editar Visitado</h2>
+        </div>
     </div>
-</div>
-
-<div class="container mt-5">
-    <form method="post" class="row g-3">
-        <!-- Campo oculto para ID_Visitado -->
+    <form method="post" class="mt-4 p-4 border rounded bg-light">
         <input type="hidden" asp-for="Visitado.ID_Visitado" />
-
-        <div class="col-md-6">
-            <div class="form-group">
-                <label asp-for="Visitado.Nombre" class="form-label">Nombre</label>
-                <input asp-for="Visitado.Nombre" class="form-control" />
-                <span asp-validation-for="Visitado.Nombre" class="text-danger"></span>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input asp-for="Visitado.Nombre" class="form-control" placeholder="Nombre del visitado" />
+                    <label asp-for="Visitado.Nombre">Nombre</label>
+                    <span asp-validation-for="Visitado.Nombre" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Visitado.Apellido" class="form-control" placeholder="Apellido del visitado" />
+                    <label asp-for="Visitado.Apellido">Apellido</label>
+                    <span asp-validation-for="Visitado.Apellido" class="text-danger"></span>
+                </div>
             </div>
-
-            <div class="form-group mt-3">
-                <label asp-for="Visitado.Apellido" class="form-label">Apellido</label>
-                <input asp-for="Visitado.Apellido" class="form-control" />
-                <span asp-validation-for="Visitado.Apellido" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mt-3">
-                <label asp-for="Visitado.Cargo" class="form-label">Cargo</label>
-                <input asp-for="Visitado.Cargo" class="form-control" />
-                <span asp-validation-for="Visitado.Cargo" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mt-3">
-                <label asp-for="Visitado.Departamento" class="form-label">Departamento</label>
-                <input asp-for="Visitado.Departamento" class="form-control" />
-                <span asp-validation-for="Visitado.Departamento" class="text-danger"></span>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="form-group mt-3">
-                <label asp-for="Visitado.Telefono" class="form-label">Teléfono</label>
-                <input asp-for="Visitado.Telefono" class="form-control" />
-                <span asp-validation-for="Visitado.Telefono" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mt-3">
-                <label asp-for="Visitado.Email" class="form-label">Email</label>
-                <input asp-for="Visitado.Email" class="form-control" />
-                <span asp-validation-for="Visitado.Email" class="text-danger"></span>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input asp-for="Visitado.Cargo" class="form-control" placeholder="Cargo del visitado" />
+                    <label asp-for="Visitado.Cargo">Cargo</label>
+                    <span asp-validation-for="Visitado.Cargo" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Visitado.Departamento" class="form-control" placeholder="Departamento del visitado" />
+                    <label asp-for="Visitado.Departamento">Departamento</label>
+                    <span asp-validation-for="Visitado.Departamento" class="text-danger"></span>
+                </div>
             </div>
         </div>
-
-        <div class="col-12 text-center mt-5">
-            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            <a asp-page="./Index" class="btn btn-secondary ms-2">Cancelar</a>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input asp-for="Visitado.Telefono" class="form-control" placeholder="Teléfono del visitado" />
+                    <label asp-for="Visitado.Telefono">Teléfono</label>
+                    <span asp-validation-for="Visitado.Telefono" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input asp-for="Visitado.Email" class="form-control" placeholder="Email del visitado" />
+                    <label asp-for="Visitado.Email">Email</label>
+                    <span asp-validation-for="Visitado.Email" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center mt-5">
+            <button type="submit" class="btn btn-primary me-2">Guardar Cambios</button>
+            <a asp-page="./Index" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 </div>

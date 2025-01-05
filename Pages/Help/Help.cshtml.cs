@@ -44,7 +44,7 @@ namespace sisae.Pages.Help
             }
         }
 
-        // M�todo para consultar a ChatGPT con los datos del FAQ
+        // Método para consultar a ChatGPT con los datos del FAQ
         private async Task<string> ConsultarChatGPT(string consulta, string faqData)
         {
             using (HttpClient client = new HttpClient())

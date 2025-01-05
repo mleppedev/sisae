@@ -23,9 +23,15 @@ namespace sisae.Pages.AccesosProhibidos
 
         public List<SelectListItem> VisitantesSelectList { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(string rut = null, bool nuevo = false)
         {
-            // Generar lista de Visitantes
+            if (nuevo)
+            {
+                AccesoProhibido = new AccesoProhibido();
+                // Establecer la fecha actual
+                AccesoProhibido.Fecha_Prohibicion = DateTime.Now.Date;
+            }
+
             VisitantesSelectList = await _context.Visitantes.Select(v => new SelectListItem
             {
                 Value = v.ID_Visitante.ToString(),
