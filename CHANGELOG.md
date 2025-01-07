@@ -74,3 +74,14 @@
 
 ### Corregido
 - Se implementó y restauró la funcionalidad de gestión del perfil de usuarios en una aplicación ASP.NET Core con Identity, garantizando el correcto guardado del número de teléfono mediante el uso del método SetPhoneNumberAsync. Además, se preservó el diseño original, incluyendo el menú de navegación lateral y los estilos del formulario, mientras se incorporaron validaciones robustas del lado del servidor con mensajes dinámicos de éxito y error. Finalmente, se sincronizaron los cambios en tiempo real con RefreshSignInAsync, logrando una experiencia de usuario intuitiva y funcional.
+
+## [1.0.3] - 2024-12-30
+
+### Añadido
+- Inclusión de un botón "NUEVO" en el formulario de `Informes.cshtml` para limpiar los campos de entrada.
+
+### Modificado
+- Ajustes en la función `formatearFechaYYYYMMDD` para manejar correctamente el formato de las fechas.
+- Verificación y corrección de la asignación de fechas de nacimiento y vencimiento en el formulario de creación de visitantes.
+- Mejora en la disposición de elementos en el formulario de `Create.cshtml` utilizando el sistema de grillas de Bootstrap.
+- Actualización de los nombres de columnas en la consulta predefinida para listar los últimos 1000 eventos de `EventLog`.
