@@ -192,8 +192,8 @@ namespace sisae.Pages.Visitantes
                 int yearInt = int.Parse(year);
                 string fullYear = yearInt > 50 ? "19" + year : "20" + year;
 
-                // Devolver la fecha en formato dd-mm-yyyy
-                return $"{day}-{month}-{fullYear}";
+                // Devolver la fecha en formato yyyy-MM-dd
+                return $"{fullYear}-{month}-{day}";
             }
             return "Fecha de nacimiento no encontrada";
         }
@@ -212,8 +212,8 @@ namespace sisae.Pages.Visitantes
                 // Asumimos que las fechas de vencimiento siempre son del siglo XXI
                 string fullYear = "20" + year;
 
-                // Devolver la fecha en formato dd-mm-yyyy
-                return $"{day}-{month}-{fullYear}";
+                // Devolver la fecha en formato yyyy-MM-dd
+                return $"{fullYear}-{month}-{day}";
             }
             return "Fecha de vencimiento no encontrada";
         }

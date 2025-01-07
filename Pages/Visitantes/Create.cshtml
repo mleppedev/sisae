@@ -86,10 +86,10 @@
 
         // Función para convertir la fecha al formato YYYY-MM-DD
         function formatearFechaYYYYMMDD(fecha) {
-            const partes = fecha.split('-'); // Asumimos que la fecha está en formato DD-MM-YYYY
-            const dia = partes[0];
+            const partes = fecha.split('-'); // Asumimos que la fecha está en formato YYYY-MM-DD
+            const anio = partes[0];
             const mes = partes[1];
-            const anio = partes[2];
+            const dia = partes[2];
             return `${anio}-${mes}-${dia}`; // Formato YYYY-MM-DD
         }
 
@@ -150,13 +150,11 @@
 
                         // Asignar las fechas (nacimiento y vencimiento) en formato YYYY-MM-DD
                         if (data.nacimiento) {
-                            const fechaNacimientoFormateada = formatearFechaYYYYMMDD(data.nacimiento);
-                            document.querySelector('input[name="Visitante.FechaNacimiento"]').value = fechaNacimientoFormateada;
+                            document.querySelector('input[name="Visitante.FechaNacimiento"]').value = data.nacimiento;
                         }
 
                         if (data.vencimiento) {
-                            const fechaVencimientoFormateada = formatearFechaYYYYMMDD(data.vencimiento);
-                            document.querySelector('input[name="Visitante.FechaVencimientoCarnet"]').value = fechaVencimientoFormateada;
+                            document.querySelector('input[name="Visitante.FechaVencimientoCarnet"]').value = data.vencimiento;
                         }
 
                     } else {
