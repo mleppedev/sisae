@@ -26,6 +26,7 @@
                         <option value="4">Genera un listado de todos los Visitados registrados ordenado alfabéticamente </option>
                         <option value="5">Genera un listado de todos los Visitados que han recibido visitas, agrúpalos y muestra el total de visitas de cada uno</option>
                         <option value="6">Quien es la visita que ha visitado más veces a un mismo visitado?</option>
+                        <option value="7">Listar los últimos 1000 eventos de EventLog</option>
                         <!-- Agrega más opciones según necesites -->
                     </select>
                     <label for="predefinedQueries">Consultas preestablecidas:</label>
@@ -123,6 +124,9 @@
                     break;
                 case "6":
                     consultaInput.value = "SELECT TOP 100 CONCAT(VISITANTES.NOMBRE, ' ', VISITANTES.APELLIDO) AS VISITANTE, CONCAT(VISITADOS.NOMBRE, ' ', VISITADOS.APELLIDO) AS VISITADO, COUNT(Visitas.ID_Visita) AS CANTIDAD_VISITAS FROM Visitas JOIN Visitantes ON Visitas.ID_Visitante = Visitantes.ID_Visitante JOIN Visitados ON Visitas.ID_Visitado = Visitados.ID_Visitado GROUP BY CONCAT(VISITANTES.NOMBRE, ' ', VISITANTES.APELLIDO), CONCAT(VISITADOS.NOMBRE, ' ', VISITADOS.APELLADO) ORDER BY CANTIDAD_VISITAS DESC;";
+                    break;
+                case "7":
+                    consultaInput.value = "SELECT TOP 1000 [ID], [EventType], [Description], [EventDate], [UserId] FROM [sisae_db].[dbo].[EventLogs] ORDER BY [EventDate] DESC;";
                     break;
                 // Agregar más casos según sea necesario
                 default:

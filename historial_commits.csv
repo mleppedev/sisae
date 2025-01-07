@@ -1,0 +1,28 @@
+5e9ccd8321d010219d91c1319ffce2ce19a944ea,TrineoApp SpA,contacto@trineoapp.cl,2025-01-04 22:15:51 -0300,Cambios generales UI/UX
+2c96f7bef92890e1715c60018c6ea51cef8f0a68,TrineoApp SpA,contacto@trineoapp.cl,2025-01-04 20:49:24 -0300,Formato principal WIP
+8f14b199fba41d501de5786efbb23a7b9ff0695c,TrineoApp SpA,contacto@trineoapp.cl,2025-01-04 20:37:53 -0300,Cambio en la UI de los Delete
+d16df91002f1e9d1565bda32d54ce933118fc31d,TrineoApp SpA,contacto@trineoapp.cl,2025-01-04 20:24:22 -0300,Actualización de diseño y traducción de vistas, y actualización del CHANGELOG para la versión 1.0.2
+a448ddd517183e2b013f2da85baefcbc14daa7e9,TrineoApp SpA,contacto@trineoapp.cl,2025-01-04 18:35:28 -0300,Mejoras en el diseño y responsividad de las vistas, incluyendo centrado de títulos, ajuste de tablas y alineación de elementos en Index.cshtml y otras vistas relacionadas.
+7a205157e6677bb25a95a6a61381054f7a172af7,TrineoApp SpA,contacto@trineoapp.cl,2025-01-04 10:53:43 -0300,Referencia servicio Smtp
+145db54e17b93e3c9128762757a1792120531e78,TrineoApp SpA,contacto@trineoapp.cl,2025-01-04 10:43:26 -0300,Actualización de la versión 1.0.1 del changelog con traducciones y mejoras
+26011cf2015bd5999f1d57b92dfa0b61ed9ae950,TrineoApp SpA,contacto@trineoapp.cl,2024-12-26 21:07:15 -0300,Actualización de la página de ayuda y corrección de formato de negritas
+4451bb493d8b78b166d87131b948c707b07033b5,TrineoApp SpA,contacto@trineoapp.cl,2024-12-26 10:42:10 -0300,Release version 1.0.1: Mejoras en la página de perfil, corrección de errores en la página de ayuda, y ajustes en el diseño de varias páginas.
+fad49a9129386db9cd8928398671566882594bb2,TrineoApp SpA,contacto@trineoapp.cl,2024-12-25 23:29:11 -0300,Release version 1.0.0\n\n### Añadido\n- Implementación de `localStorage` para persistir datos del gráfico y tablas en el dashboard.\n- Funcionalidad de clic en nodos del gráfico para mostrar información detallada.\n- Botón para limpiar el dashboard, que borra el gráfico, las tablas y el almacenamiento local.\n- Funcionalidad para exportar las tablas de Visitas y Prohibidos a CSV.\n- Hacer dropdown de visitante solo lectura y actualizarlo después de verificar el RUT en la página de creación de visitas.\n- Lógica de reintento en la conexión a la base de datos usando `EnableRetryOnFailure`.\n- Funcionalidad de exportación a CSV para las tablas de Visitas, Accesos Prohibidos y Visitados.\n- Paginación en las tablas del Dashboard asi como también en las páginas de Accesos Prohibidos, Visitas y Visitados usando DataTables.\n\n### Modificado\n- Ajustes en el diseño del dashboard para maximizar el uso del espacio horizontal y centrar el contenido.\n- Estilo del botón de limpieza para mejorar su visibilidad.\n- Cambio del botón de limpieza a texto cliqueable para mejorar la visibilidad y funcionalidad.\n- Almacenamiento del ID del visitante en una variable y actualización del dropdown para mostrar el visitante seleccionado como referencia.\n- Configuración de DataTables para mostrar 20 registros por página y ordenar por fecha y hora de entrada de forma descendente en la página de Visitas.\n- Mejora de la UI/UX en las páginas de índice de Visitas, Accesos Prohibidos y Visitados usando Bootstrap para un diseño más limpio y responsivo.\n\n### Eliminado\n- Restricciones de ancho máximo en el contenedor del dashboard.
+c9af42023bd8c31a01cec84082d3b70711d33bb9,TrineoApp SpA,contacto@trineoapp.cl,2024-12-22 19:54:11 -0300,README
+ff81b0921b271d2b5435fd6957fd0b5001180d12,TrineoApp SpA,contacto@trineoapp.cl,2024-12-22 19:40:16 -0300,Informes con querys preestablecidas y otros
+45c0eb3b87149cb6c585e59c55a23934310d8df5,TrineoApp SpA,contacto@trineoapp.cl,2024-12-22 16:24:36 -0300,Accesos Prohibidos -> SignalR
+6814bad729fefa474fa6ab86bacef5903971aaea,TrineoApp SpA,contacto@trineoapp.cl,2024-12-22 14:51:59 -0300,Validacion Accesos Prohibidos
+d261d6187af4e5f4bd9dc378b32a59dd261f37c0,TrineoApp SpA,contacto@trineoapp.cl,2024-12-22 12:29:49 -0300,SignalR funcionando bien en http://localhost:5278/dashboardHub
+4b4486496188b3050d28870f32d16797788269ad,TrineoApp SpA,contacto@trineoapp.cl,2024-12-22 01:15:55 -0300,Validacion RUT en Visita
+4bb1b1fbc234f2293fb73966533dc3cd0fe619c2,TrineoApp SpA,contacto@trineoapp.cl,2024-12-21 23:54:03 -0300,Log de eventos implementado en todas las clases relevantes
+054c2eed3783be1fa87cbadd42ecac3646b059a2,TrineoApp SpA,contacto@trineoapp.cl,2024-12-21 22:26:47 -0300,EventLogger
+0fe91a3c35cc7794f659141a24def2ba78eb9122,TrineoApp SpA,contacto@trineoapp.cl,2024-12-21 22:03:44 -0300,Validación Existencia Visitante
+4b6325d630f5ba27d4cf36a51dc743cf42cb4b20,TrineoApp SpA,contacto@trineoapp.cl,2024-12-21 20:02:25 -0300,Validación RUT MOD11
+a83416687ab3d9b3e5ca0b83cab7a9bc9b3f4486,TrineoApp SpA,contacto@trineoapp.cl,2024-12-21 11:34:44 -0300,Cambios menores
+366be6698c983154f8f7eebd49562228e7287648,TrineoApp SpA,contacto@trineoapp.cl,2024-12-17 11:47:44 -0300,docs
+17b12a2860247866f595a2a298986b146094a18b,TrineoApp SpA,contacto@trineoapp.cl,2024-12-10 17:06:45 -0300,Eliminacion backup
+fed50272276b0909da9dc493b9d213a2e5d56164,TrineoApp SpA,contacto@trineoapp.cl,2024-12-10 16:25:33 -0300,20241210
+c811f32979f448ec6e2e53df3717dc605c17edeb,TrineoApp SpA,contacto@trineoapp.cl,2024-12-09 22:56:43 -0300,PRE UT
+a95e880ed38572a1243b5e68ea450ea30df5526f,TrineoApp SpA,contacto@trineoapp.cl,2024-11-03 21:50:16 -0300,migrations 01
+da01f0775f7c6cf799e272b2f8abb0734809198d,TrineoApp SpA,contacto@trineoapp.cl,2024-09-13 12:09:42 -0300,README.md
+16782fe04b8bc770009d6d1490198ff01d3a7a41,TrineoApp SpA,contacto@trineoapp.cl,2024-09-13 12:02:06 -0300,Primer commit

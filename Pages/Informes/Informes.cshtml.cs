@@ -56,7 +56,10 @@ namespace sisae.Pages.Informes
                         SqlQuery = "SELECT TOP 100 UPPER(CONCAT(vd.Nombre, ' ', vd.Apellido)) AS VISITADO, COUNT(v.ID_Visita) AS TOTAL_VISITAS FROM Visitas v JOIN Visitados vd ON v.ID_Visitado = vd.ID_Visitado GROUP BY vd.Nombre, vd.Apellido ORDER BY COUNT(v.ID_Visita) DESC, MAX(v.Fecha_Visita) DESC, MAX(v.Hora_Entrada) DESC;";
                         break;
                     case "6":
-                        SqlQuery = "SELECT TOP 100 CONCAT(VISITANTES.NOMBRE, ' ', VISITANTES.APELLIDO) AS VISITANTE, CONCAT(VISITADOS.NOMBRE, ' ', VISITADOS.APELLIDO) AS VISITADO, COUNT(Visitas.ID_Visita) AS CANTIDAD_VISITAS FROM Visitas JOIN Visitantes ON Visitas.ID_Visitante = Visitantes.ID_Visitante JOIN Visitados ON Visitas.ID_Visitado = Visitados.ID_Visitado GROUP BY CONCAT(VISITANTES.NOMBRE, ' ', VISITANTES.APELLIDO), CONCAT(VISITADOS.NOMBRE, ' ', VISITADOS.APELLADO) ORDER BY CANTIDAD_VISITAS DESC;";
+                        SqlQuery = "SELECT TOP 100 CONCAT(VISITANTES.NOMBRE, ' ', VISITANTES.APELLIDO) AS VISITANTE, CONCAT(VISITADOS.NOMBRE, ' ', VISITADOS.APELLIDO) AS VISITADO, COUNT(Visitas.ID_Visita) AS CANTIDAD_VISITAS FROM Visitas JOIN Visitantes ON Visitas.ID_Visitante = Visitantes.ID_Visitante JOIN Visitados ON Visitas.ID_Visitado = Visitados.ID_Visitado GROUP BY CONCAT(VISITANTES.NOMBRE, ' ', VISITANTES.APELLIDO), CONCAT(VISITADOS.NOMBRE, ' ', VISITADOS.APELLIDO) ORDER BY CANTIDAD_VISITAS DESC;";
+                        break;
+                    case "7":
+                        SqlQuery = "SELECT TOP 1000 [ID] AS IDENTIFICADOR, [EventType] AS TIPO_EVENTO, [Description] AS DESCRIPCIÓN, [EventDate] AS FECHA_EVENTO, [UserId] AS ID_USUARIO FROM [sisae_db].[dbo].[EventLogs] ORDER BY [EventDate] DESC;";
                         break;
                     // Agregar más casos según sea necesario
                 }
