@@ -79,6 +79,8 @@
 
 ### Añadido
 - Inclusión de un botón "NUEVO" en el formulario de `Informes.cshtml` para limpiar los campos de entrada.
+- Selector de cámara para elegir entre múltiples dispositivos de video.
+- Toggle switch para habilitar o deshabilitar los filtros de imagen.
 
 ### Modificado
 - Ajustes en la función `formatearFechaYYYYMMDD` para manejar correctamente el formato de las fechas.

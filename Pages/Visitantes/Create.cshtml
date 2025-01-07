@@ -93,25 +93,109 @@
             return `${anio}-${mes}-${dia}`; // Formato YYYY-MM-DD
         }
 
+        // Ajustar el filtro de suavizado
+        function aplicarFiltroSuavizado(data, width, height) {
+            const kernel = [
+                [0, 1, 0],
+                [1, 4, 1],
+                [0, 1, 0]
+            ];
+            const kernelSize = 3;
+            const kernelSum = 8;
+            const half = Math.floor(kernelSize / 2);
+
+            const output = new Uint8ClampedArray(data.length);
+
+            for (let y = half; y < height - half; y++) {
+                for (let x = half; x < width - half; x++) {
+                    let sum = 0;
+                    for (let ky = -half; ky <= half; ky++) {
+                        for (let kx = -half; kx <= half; kx++) {
+                            const pixelIndex = ((y + ky) * width + (x + kx)) * 4;
+                            sum += data[pixelIndex] * kernel[ky + half][kx + half];
+                        }
+                    }
+                    const outputIndex = (y * width + x) * 4;
+                    const avg = sum / kernelSum;
+                    output[outputIndex] = avg;
+                    output[outputIndex + 1] = avg;
+                    output[outputIndex + 2] = avg;
+                    output[outputIndex + 3] = data[outputIndex + 3]; // Preserve alpha
+                }
+            }
+            return output;
+        }
+
+        // Modificar la función de preprocesamiento para usar el toggle
+        function preprocesarImagen(imageDataURL, callback) {
+            const img = new Image();
+            img.src = imageDataURL;
+
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                context.drawImage(img, 0, 0);
+
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+                // Verificar si los filtros están habilitados
+                const filtrosHabilitados = document.getElementById('toggleFilters').checked;
+
+                if (filtrosHabilitados) {
+                    // Convertir a escala de grises
+                    for (let i = 0; i < data.length; i += 4) {
+                        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                        data[i] = avg;
+                        data[i + 1] = avg;
+                        data[i + 2] = avg;
+                    }
+
+                    // Aplicar filtro de suavizado
+                    const suavizadoData = aplicarFiltroSuavizado(data, canvas.width, canvas.height);
+                    for (let i = 0; i < data.length; i++) {
+                        data[i] = suavizadoData[i];
+                    }
+
+                    // Ajustar la binarización
+                    for (let i = 0; i < data.length; i += 4) {
+                        const avg = data[i];
+                        const binarized = avg > 120 ? 255 : 0; // Ajustar el umbral a 120
+                        data[i] = binarized;
+                        data[i + 1] = binarized;
+                        data[i + 2] = binarized;
+                    }
+                }
+
+                context.putImageData(imageData, 0, 0);
+
+                callback(canvas.toDataURL('image/png'));
+            };
+        }
+
         // Capturar la cédula de identidad para OCR
         btnScanCedula.addEventListener('click', function () {
             var context = canvas.getContext('2d');
             context.drawImage(video, 0, 0, 320, 240);
 
             var dataURL = canvas.toDataURL('image/png');
-            cedulaPhoto.src = dataURL;
-            cedulaPhoto.style.display = 'block';
+            preprocesarImagen(dataURL, function(processedDataURL) {
+                cedulaPhoto.src = processedDataURL;
+                cedulaPhoto.style.display = 'block';
 
-            var imageBase64 = dataURL.split(',')[1];
+                var imageBase64 = processedDataURL.split(',')[1];
 
-            fetch('/Visitantes/Create?handler=ScanCedula', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                },
-                body: JSON.stringify({ imageBase64: imageBase64 })
-            })
+                fetch('/Visitantes/Create?handler=ScanCedula', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ imageBase64: imageBase64 })
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -126,6 +210,8 @@
                         }
                         if (data.primerApellido && data.segundoApellido) {
                             document.querySelector('input[name="Visitante.Apellido"]').value = `${data.primerApellido} ${data.segundoApellido}`;
+                            console.log('Primer Apellido:', data.primerApellido);
+                            console.log('Segundo Apellido:', data.segundoApellido);
                         }
                         if (data.direccion) {
                             document.querySelector('input[name="Visitante.Direccion"]').value = data.direccion;
@@ -145,7 +231,8 @@
                         if (data.run && validarRut(data.run)) {
                             document.querySelector('input[name="Visitante.RUT"]').value = data.run;
                         } else {
-                            alert("El RUT extraído no es válido.");
+                            alert("El RUT extraído no es válido. Por favor, escanee nuevamente.");
+                            limpiarCamposFormulario();
                         }
 
                         // Asignar las fechas (nacimiento y vencimiento) en formato YYYY-MM-DD
@@ -158,13 +245,15 @@
                         }
 
                     } else {
-                        alert("No se pudo extraer información de la cédula.");
+                        alert("No se pudo extraer información de la cédula. Por favor, escanee nuevamente.");
+                        limpiarCamposFormulario();
                     }
                 })
                 .catch(error => {
                     console.error('Error en el proceso OCR:', error);
                     alert('Ocurrió un error durante el proceso OCR.');
                 });
+            });
         });
 
         // Función para limpiar los campos del formulario
@@ -179,6 +268,36 @@
             document.querySelector('input[name="Visitante.FechaNacimiento"]').value = '';
             document.querySelector('input[name="Visitante.FechaVencimientoCarnet"]').value = '';
         }
+
+        // Obtener y listar las cámaras disponibles
+        navigator.mediaDevices.enumerateDevices()
+            .then(function(devices) {
+                const videoSelect = document.getElementById('cameraSelect');
+                devices.forEach(function(device) {
+                    if (device.kind === 'videoinput') {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId;
+                        option.text = device.label || `Camera ${videoSelect.length + 1}`;
+                        videoSelect.appendChild(option);
+                    }
+                });
+            })
+            .catch(function(err) {
+                console.error('Error al enumerar dispositivos:', err);
+            });
+
+        // Cambiar la fuente de video según la cámara seleccionada
+        document.getElementById('cameraSelect').addEventListener('change', function(event) {
+            const deviceId = event.target.value;
+            navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: deviceId } } })
+                .then(function(stream) {
+                    const video = document.querySelector('video');
+                    video.srcObject = stream;
+                })
+                .catch(function(err) {
+                    console.error('Error al acceder a la cámara:', err);
+                });
+        });
     </script>
 }
 
@@ -258,6 +377,17 @@
                 </div>
             </div>
         </div>
+        <div class="row mb-3">
+            <div class="col-md-6 text-start">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="toggleFilters" checked>
+                    <label class="form-check-label" for="toggleFilters">Habilitar Filtros de Imagen</label>
+                </div>
+            </div>
+            <div class="col-md-6 text-end">
+                <select id="cameraSelect" class="form-select"></select>
+            </div>
+        </div>
         <div class="container mt-4">
             <div class="d-flex justify-content-center mb-3">
                 <button type="button" class="btn btn-secondary btn-lg mx-2" id="btn-capture">Capturar Imagen del Visitante</button>
@@ -293,5 +423,7 @@
         <button type="submit" class="btn btn-primary mt-4 w-100">Registrar Visitante</button>
     </form>
 </div>
+
+<select id="cameraSelect" class="form-select mb-3"></select>
 
 
